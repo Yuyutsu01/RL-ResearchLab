@@ -1,0 +1,36 @@
+# Short test configuration for verifying the dense reward shaping pipeline
+experiment:
+  name: "cartpole_dense_short_test"
+  env_id: "CartPole-v1"
+  total_timesteps: 10000
+  eval_freq: 2000
+  eval_episodes: 5
+  checkpoint_freq: 5000
+  seeds: [42]
+  reproducibility:
+    deterministic: true
+    benchmark: false
+
+ppo:
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.0
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  device: "cpu"
+  policy_kwargs:
+    net_arch:
+      pi: [64, 64]
+      vf: [64, 64]
+
+reward_shaping:
+  strategy: "dense"
+  params:
+    position_weight: 0.1
+    angle_weight: 1.0
+    max_bonus: 0.0

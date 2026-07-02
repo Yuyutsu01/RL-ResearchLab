@@ -1,0 +1,10 @@
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Model checkpoints and weights zip archives
+models/**/*.zip
+
+# Local system files
+.DS_Store
+Thumbs.db

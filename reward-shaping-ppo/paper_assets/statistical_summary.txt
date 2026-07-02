@@ -1,0 +1,38 @@
+================================================================================
+RL RESEARCH LAB: STATISTICAL EVALUATION MANUSCRIPT ASSETS
+Comparing: IDENTITY (Control) vs. DENSE (Shaped)
+Generated: 2026-07-02
+================================================================================
+
+1. FINAL DETErMINISTIC EVALUATION PERFORMANCE
+--------------------------------------------------------------------------------
+- IDENTITY raw rewards: [500.0, 500.0, 500.0, 500.0, 500.0]
+- DENSE raw rewards: [500.0, 500.0, 500.0, 500.0, 500.0]
+
+Welch's Independent t-test:
+  t-statistic = nan
+  p-value     = nan (p < 0.05 is statistically significant)
+
+Mann-Whitney U Rank Test:
+  U-statistic = 12.5000
+  p-value     = 1.0000e+00
+
+Effect Size:
+  Cohen's d   = 0.0000 (d > 0.8 represents large effect size)
+
+Conclusion:
+  No statistically significant difference in final performance was detected.
+
+2. SAMPLE EFFICIENCY AND CONVERGENCE DYNAMICS
+--------------------------------------------------------------------------------
+Average timesteps required to reach unshaped evaluation reward thresholds:
+
+| Threshold | Identity Mean (Steps) | Dense Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Reward 100 | 5000.0                | 5000.0                | 1.00x          | nan | 0.0000 |
+| Reward 200 | 8000.0                | 6000.0                | 1.33x          | 2.4288e-01 | 0.8000 |
+| Reward 300 | 9000.0                | 8000.0                | 1.12x          | 6.7072e-01 | 0.2828 |
+| Reward 400 | 14000.0               | 15000.0               | 0.93x          | 6.1010e-01 | -0.3381 |
+| Reward 500 | 23000.0               | 23000.0               | 1.00x          | 1.0000e+00 | 0.0000 |
+
+================================================================================
