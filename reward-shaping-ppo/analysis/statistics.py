@@ -221,7 +221,9 @@ class ExperimentAnalyzer:
 
         return summary
 
-    def get_timesteps_to_thresholds(self, strategy: str, thresholds: list[int] | None = None) -> dict[int, dict[str, Any]]:
+    def get_timesteps_to_thresholds(
+        self, strategy: str, thresholds: list[int] | None = None
+    ) -> dict[int, dict[str, Any]]:
         """
         Calculates the average timesteps required to reach specific evaluation
         reward thresholds for a given strategy.
