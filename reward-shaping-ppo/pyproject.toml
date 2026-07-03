@@ -71,3 +71,14 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",
 ]
+
+[tool.setuptools.packages.find]
+include = [
+    "analysis*",
+    "callbacks*",
+    "environments*",
+    "experiments*",
+    "reward_functions*",
+    "utils*",
+    "scripts*"
+]
