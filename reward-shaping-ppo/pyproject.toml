@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "rl-researchlab-reward-shaping-ppo"
+version = "0.1.0"
+description = "Reward Shaping Strategies for PPO — A Comparative Experimental Study"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "stable-baselines3[extra]>=2.1.0",
+    "gymnasium[classic-control]>=0.29.1",
+    "torch>=2.0.0",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "pyyaml>=6.0",
+    "scipy>=1.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4.0",
+    "black>=24.0",
+    "mypy>=1.8.0",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501", "B008", "SIM108"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "reward_functions",
+    "environments",
+    "experiments",
+    "analysis",
+    "callbacks",
+    "utils",
+]
+
+[tool.black]
+line-length = 120
+target-version = ["py310", "py311"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+check_untyped_defs = false
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests that run actual RL training",
+    "smoke: marks smoke tests that run short training pipelines",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
