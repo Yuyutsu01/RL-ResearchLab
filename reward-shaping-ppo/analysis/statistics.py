@@ -90,15 +90,14 @@ class ExperimentAnalyzer:
 
         for df in seed_dfs:
             # Apply rolling average to smooth individual runs before interpolation
-            rolling_orig = np.asarray(
-                df["original_reward"].rolling(window=rolling_window, min_periods=1).mean().values, dtype=float
-            )
-            rolling_shape = np.asarray(
-                df["shaped_reward"].rolling(window=rolling_window, min_periods=1).mean().values, dtype=float
-            )
-            rolling_len = np.asarray(
-                df["l"].rolling(window=rolling_window, min_periods=1).mean().values, dtype=float
-            )
+            orig_vals = df["original_reward"].rolling(window=rolling_window, min_periods=1).mean().values
+            rolling_orig = np.asarray(orig_vals, dtype=float)
+
+            shape_vals = df["shaped_reward"].rolling(window=rolling_window, min_periods=1).mean().values
+            rolling_shape = np.asarray(shape_vals, dtype=float)
+
+            len_vals = df["l"].rolling(window=rolling_window, min_periods=1).mean().values
+            rolling_len = np.asarray(len_vals, dtype=float)
 
             # Interpolate onto common step grid
             xp = np.asarray(df["cumulative_steps"].values, dtype=float)
