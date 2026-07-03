@@ -57,7 +57,7 @@ jobs:
 
       - name: MyPy Type Check
         working-directory: reward-shaping-ppo
-        run: mypy .
+        run: mypy . --explicit-package-bases
 
       - name: Config Schema Validation
         working-directory: reward-shaping-ppo
