@@ -67,6 +67,7 @@ class RewardShapingWrapper(gym.Wrapper):
             A tuple of (next observation, shaped reward, terminated, truncated, info dict).
         """
         next_obs, reward, terminated, truncated, info = self.env.step(action)
+        reward = float(reward)
         done = terminated or truncated
 
         # Shape the reward using the transition details

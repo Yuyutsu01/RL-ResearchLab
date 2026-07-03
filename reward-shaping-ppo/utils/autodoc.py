@@ -111,8 +111,8 @@ class AutoDocManager:
             if os.path.exists(seed_plots_src):
                 dest_seed_plots = os.path.join(exp_plots_dest_dir, strategy_clean, seed_name)
                 os.makedirs(dest_seed_plots, exist_ok=True)
-                for f in glob.glob(os.path.join(seed_plots_src, "*.*")):
-                    shutil.copy2(f, dest_seed_plots)
+                for plot_src_file in glob.glob(os.path.join(seed_plots_src, "*.*")):
+                    shutil.copy2(plot_src_file, dest_seed_plots)
 
         # 4. Generate overview.md
         self._write_overview_file(exp_dest_dir, strategy_clean, env_id)

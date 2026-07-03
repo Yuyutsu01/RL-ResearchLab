@@ -215,7 +215,7 @@ class ExperimentAnalyzer:
 
         return summary
 
-    def get_timesteps_to_thresholds(self, strategy: str, thresholds: list[int] = None) -> dict[int, dict[str, Any]]:
+    def get_timesteps_to_thresholds(self, strategy: str, thresholds: list[int] | None = None) -> dict[int, dict[str, Any]]:
         """
         Calculates the average timesteps required to reach specific evaluation
         reward thresholds for a given strategy.
@@ -234,7 +234,7 @@ class ExperimentAnalyzer:
         if not seed_paths:
             return {}
 
-        threshold_steps = {t: [] for t in thresholds}
+        threshold_steps: dict[int, list[float]] = {t: [] for t in thresholds}
 
         for path in seed_paths:
             npz_path = os.path.join(path, "evaluations.npz")

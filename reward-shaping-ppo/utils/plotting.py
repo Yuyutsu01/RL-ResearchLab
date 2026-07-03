@@ -264,5 +264,5 @@ def plot_training_losses(env_id: str, strategy: str, seed: int, base_dir: str = 
         else:
             ax.text(0.5, 0.5, "Metric Not Found", dict(ha="center", va="center"))
 
-    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+    fig.tight_layout(rect=(0, 0.03, 1, 0.95))
     save_figure(fig, os.path.join(plots_dir, "losses"))
