@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from reward_functions.base import RewardShaper
 from reward_functions.dense import DenseRewardShaper
