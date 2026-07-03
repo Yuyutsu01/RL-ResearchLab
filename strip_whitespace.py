@@ -6,21 +6,32 @@ def strip_trailing_whitespace(directory):
         for f in files:
             if f.endswith('.py'):
                 path = os.path.join(root, f)
-                with open(path, 'r', encoding='utf-8') as file:
-                    lines = file.readlines()
+                with open(path, 'rb') as file:
+                    content = file.read()
+                
+                # Split by newline (handles \r\n and \n)
+                lines = content.splitlines()
                 
                 changed = False
                 new_lines = []
                 for line in lines:
-                    # Strip spaces and tabs from the right, but keep the newline
-                    stripped = line.rstrip(' \t\r\n') + '\n'
-                    if stripped != line:
+                    # decode as utf-8, strip ALL trailing whitespace, encode back
+                    try:
+                        text_line = line.decode('utf-8')
+                    except UnicodeDecodeError:
+                        text_line = line.decode('latin-1')
+                        
+                    stripped = text_line.rstrip()
+                    if stripped != text_line:
                         changed = True
-                    new_lines.append(stripped)
+                    new_lines.append(stripped.encode('utf-8'))
                 
-                if changed:
-                    with open(path, 'w', encoding='utf-8') as file:
-                        file.writelines(new_lines)
+                # Re-join with strict \n
+                new_content = b'\n'.join(new_lines) + b'\n'
+                
+                if new_content != content:
+                    with open(path, 'wb') as file:
+                        file.write(new_content)
                     count += 1
                     print(f"Cleaned: {path}")
     
