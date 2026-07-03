@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Config Schema Validator for CI gates."""
 
+import glob
 import os
 import sys
-import glob
+
 import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -12,13 +13,28 @@ from utils.config import Config
 
 VALID_TOP_LEVEL_KEYS = {"experiment", "ppo", "reward_shaping"}
 VALID_EXPERIMENT_KEYS = {
-    "name", "env_id", "total_timesteps", "eval_freq", "eval_episodes",
-    "checkpoint_freq", "seeds", "reproducibility"
+    "name",
+    "env_id",
+    "total_timesteps",
+    "eval_freq",
+    "eval_episodes",
+    "checkpoint_freq",
+    "seeds",
+    "reproducibility",
 }
 VALID_PPO_KEYS = {
-    "learning_rate", "n_steps", "batch_size", "n_epochs", "gamma",
-    "gae_lambda", "clip_range", "ent_coef", "vf_coef", "max_grad_norm",
-    "policy_kwargs", "device"
+    "learning_rate",
+    "n_steps",
+    "batch_size",
+    "n_epochs",
+    "gamma",
+    "gae_lambda",
+    "clip_range",
+    "ent_coef",
+    "vf_coef",
+    "max_grad_norm",
+    "policy_kwargs",
+    "device",
 }
 VALID_REWARD_SHAPING_KEYS = {"strategy", "params"}
 VALID_REPRODUCIBILITY_KEYS = {"deterministic", "benchmark"}
@@ -27,7 +43,7 @@ VALID_REPRODUCIBILITY_KEYS = {"deterministic", "benchmark"}
 def validate_config(filepath: str) -> list[str]:
     errors = []
     try:
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             data = yaml.safe_load(f)
     except yaml.YAMLError as e:
         return [f"YAML parse error: {e}"]

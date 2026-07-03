@@ -1,6 +1,4 @@
 import os
-import json
-import pytest
 
 from utils.autodoc import AutoDocManager
 
@@ -12,6 +10,7 @@ class TestAutoDocManagerStructure:
         package_dir.mkdir(exist_ok=True)
 
         import shutil
+
         for d in ["results", "plots", "paper_assets", "configs"]:
             src = base_dir / d
             dst = package_dir / d
@@ -23,8 +22,15 @@ class TestAutoDocManagerStructure:
 
         docs_dir = os.path.join(manager.workspace_root, "docs")
         expected_dirs = [
-            "research", "architecture", "decisions", "experiments",
-            "results", "evidence", "literature", "meeting_notes", "paper"
+            "research",
+            "architecture",
+            "decisions",
+            "experiments",
+            "results",
+            "evidence",
+            "literature",
+            "meeting_notes",
+            "paper",
         ]
         for subdir in expected_dirs:
             assert os.path.isdir(os.path.join(docs_dir, subdir))
@@ -35,6 +41,7 @@ class TestAutoDocManagerStructure:
         package_dir.mkdir(exist_ok=True)
 
         import shutil
+
         for d in ["results", "plots", "paper_assets", "configs"]:
             src = base_dir / d
             dst = package_dir / d
@@ -44,6 +51,7 @@ class TestAutoDocManagerStructure:
         manager = AutoDocManager(base_dir=str(package_dir))
 
         from analysis.statistics import ExperimentAnalyzer
+
         analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(package_dir))
         analyzer.compute_summary_statistics("identity")
 
@@ -62,6 +70,7 @@ class TestAutoDocManagerStructure:
         package_dir.mkdir(exist_ok=True)
 
         import shutil
+
         for d in ["results", "plots", "paper_assets", "configs"]:
             src = base_dir / d
             dst = package_dir / d
@@ -71,6 +80,7 @@ class TestAutoDocManagerStructure:
         manager = AutoDocManager(base_dir=str(package_dir))
 
         from analysis.statistics import ExperimentAnalyzer
+
         analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(package_dir))
         analyzer.compute_summary_statistics("identity")
 
@@ -92,6 +102,7 @@ class TestAutoDocManagerStructure:
         package_dir.mkdir(exist_ok=True)
 
         import shutil
+
         for d in ["results", "plots", "paper_assets", "configs"]:
             src = base_dir / d
             dst = package_dir / d
@@ -101,6 +112,7 @@ class TestAutoDocManagerStructure:
         manager = AutoDocManager(base_dir=str(package_dir))
 
         from analysis.statistics import ExperimentAnalyzer
+
         analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(package_dir))
         analyzer.compute_summary_statistics("identity")
 
@@ -120,6 +132,7 @@ class TestAutoDocManagerStructure:
         package_dir.mkdir(exist_ok=True)
 
         import shutil
+
         for d in ["results", "plots", "paper_assets", "configs"]:
             src = base_dir / d
             dst = package_dir / d
@@ -148,6 +161,7 @@ class TestAutoDocManagerIdempotency:
         package_dir.mkdir(exist_ok=True)
 
         import shutil
+
         for d in ["results", "plots", "paper_assets", "configs"]:
             src = base_dir / d
             dst = package_dir / d
@@ -157,6 +171,7 @@ class TestAutoDocManagerIdempotency:
         manager = AutoDocManager(base_dir=str(package_dir))
 
         from analysis.statistics import ExperimentAnalyzer
+
         analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(package_dir))
         analyzer.compute_summary_statistics("identity")
 

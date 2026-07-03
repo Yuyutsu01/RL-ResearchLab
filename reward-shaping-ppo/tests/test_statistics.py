@@ -1,7 +1,6 @@
-import os
 import json
+
 import numpy as np
-import pytest
 
 from analysis.statistics import ExperimentAnalyzer
 

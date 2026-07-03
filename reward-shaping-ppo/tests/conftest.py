@@ -1,7 +1,7 @@
-import os
 import json
-import pytest
+
 import numpy as np
+import pytest
 
 
 @pytest.fixture
@@ -50,13 +50,12 @@ def synthetic_results_tree(tmp_path):
                     f.write(f"{450 + i * 5:.1f},{200},{i * 10:.1f}\n")
 
             eval_timesteps = np.linspace(1000, 10000, num_evals).astype(int)
-            eval_results = np.array([
-                np.clip(
-                    np.full(eval_episodes, 50 + (i * 50)) + np.random.normal(0, 5, eval_episodes),
-                    0, 500
-                )
-                for i in range(num_evals)
-            ])
+            eval_results = np.array(
+                [
+                    np.clip(np.full(eval_episodes, 50 + (i * 50)) + np.random.normal(0, 5, eval_episodes), 0, 500)
+                    for i in range(num_evals)
+                ]
+            )
             eval_lengths = np.full((num_evals, eval_episodes), 200)
             np.savez(
                 seed_dir / "evaluations.npz",
@@ -139,13 +138,16 @@ def synthetic_single_strategy_tree(tmp_path):
             f.write(f"{reward},{100 + i},{i * 0.1:.2f},{reward},{reward}\n")
 
     timesteps = np.array([1000, 2000, 3000, 4000, 5000])
-    results = np.array([
-        [100, 110, 90, 105, 95],
-        [200, 210, 190, 205, 195],
-        [300, 310, 290, 305, 295],
-        [400, 410, 390, 405, 395],
-        [500, 500, 500, 500, 500],
-    ], dtype=float)
+    results = np.array(
+        [
+            [100, 110, 90, 105, 95],
+            [200, 210, 190, 205, 195],
+            [300, 310, 290, 305, 295],
+            [400, 410, 390, 405, 395],
+            [500, 500, 500, 500, 500],
+        ],
+        dtype=float,
+    )
     np.savez(seed_dir / "evaluations.npz", timesteps=timesteps, results=results, ep_lengths=np.full_like(results, 200))
 
     metadata = {
