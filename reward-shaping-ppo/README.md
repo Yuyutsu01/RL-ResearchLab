@@ -182,3 +182,4 @@ To guarantee identical results when re-running benchmarks:
 - **Environment Seed**: Action and observation spaces are seeded directly at the start of each episode.
 - **Model Seed**: The PyTorch neural network policy parameters are initialized using a fixed seed, and the action selection distribution is seeded inside Stable-Baselines3.
 - **PyTorch Backends**: Set `deterministic: true` in the configuration files to force PyTorch's CuDNN backend to use deterministic convolution algorithms. Note: This can lead to a slight performance slowdown on complex network topologies, but ensures bit-level reproducibility.
+ 
