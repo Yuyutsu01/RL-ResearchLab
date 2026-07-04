@@ -1,4 +1,3 @@
-import os
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
@@ -45,6 +44,7 @@ COLOR_PALETTE = [
 ]
 
 
+
 def save_figure(fig: plt.Figure, base_path: str) -> None:
     """Saves the figure as both high-resolution PNG and vector PDF."""
     os.makedirs(os.path.dirname(base_path), exist_ok=True)
@@ -71,7 +71,7 @@ def plot_learning_curves(
     plots_dir = os.path.join(base_dir, "plots", env_id)
 
     # Load data for all strategies
-    strat_data: Dict[str, Dict[str, Any]] = {}
+    strat_data: dict[str, dict[str, Any]] = {}
     for strat in strategies:
         data = analyzer.load_strategy_data(
             strat, grid_points=grid_points, rolling_window=rolling_window

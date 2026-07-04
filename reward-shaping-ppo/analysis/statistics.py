@@ -1,7 +1,11 @@
-import os
-import json
-import glob
 import datetime
+import glob
+import json
+import os
+
+# ci-trigger
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, List, Optional
@@ -138,7 +142,7 @@ class ExperimentAnalyzer:
         len_arr = np.vstack(all_episode_lengths)
 
         # Calculate statistics per grid point
-        def compute_stats(arr: np.ndarray) -> Dict[str, np.ndarray]:
+        def compute_stats(arr: np.ndarray) -> dict[str, np.ndarray]:
             mean = np.mean(arr, axis=0)
             std = np.std(arr, axis=0)
             median = np.median(arr, axis=0)
@@ -211,7 +215,7 @@ class ExperimentAnalyzer:
             meta_path = os.path.join(path, "metadata.json")
             if os.path.exists(meta_path):
                 try:
-                    with open(meta_path, "r") as f:
+                    with open(meta_path) as f:
                         meta = json.load(f)
                     training_times.append(meta.get("training_time_seconds", 0.0))
                 except Exception as e:
@@ -311,7 +315,7 @@ class ExperimentAnalyzer:
 
         return results_dict
 
-    def get_final_evaluation_rewards(self, strategy: str) -> List[float]:
+    def get_final_evaluation_rewards(self, strategy: str) -> list[float]:
         """Retrieves the final unshaped evaluation score across seeds for a strategy."""
         seed_paths = self._find_seeds_for_strategy(strategy)
         rewards = []
@@ -326,7 +330,7 @@ class ExperimentAnalyzer:
                     print(f"Error loading final eval in {npz_path}: {e}")
         return rewards
 
-    def perform_statistical_tests(self, strat1: str, strat2: str) -> Dict[str, Any]:
+    def perform_statistical_tests(self, strat1: str, strat2: str) -> dict[str, Any]:
         """
         Performs independent t-test (Welch's), Mann-Whitney U test, and Cohens d
         effect size calculations comparing final evaluation scores and steps to thresholds.
@@ -460,22 +464,22 @@ Generated: {datetime.date.today().strftime("%Y-%m-%d")}
 
 1. FINAL DETErMINISTIC EVALUATION PERFORMANCE
 --------------------------------------------------------------------------------
-- {strat1.upper()} raw rewards: {fr[f'{strat1}_values']}
-- {strat2.upper()} raw rewards: {fr[f'{strat2}_values']}
+- {strat1.upper()} raw rewards: {fr[f"{strat1}_values"]}
+- {strat2.upper()} raw rewards: {fr[f"{strat2}_values"]}
 
 Welch's Independent t-test:
-  t-statistic = {fr['t_statistic']:.4f}
-  p-value     = {fr['t_p_value']:.4e} (p < 0.05 is statistically significant)
+  t-statistic = {fr["t_statistic"]:.4f}
+  p-value     = {fr["t_p_value"]:.4e} (p < 0.05 is statistically significant)
 
 Mann-Whitney U Rank Test:
-  U-statistic = {fr['u_statistic']:.4f}
-  p-value     = {fr['u_p_value']:.4e}
+  U-statistic = {fr["u_statistic"]:.4f}
+  p-value     = {fr["u_p_value"]:.4e}
 
 Effect Size:
-  Cohen's d   = {fr['cohens_d']:.4f} (d > 0.8 represents large effect size)
+  Cohen's d   = {fr["cohens_d"]:.4f} (d > 0.8 represents large effect size)
 
 Conclusion:
-  {"The strategies differ significantly in final asymptotic performance." if fr['t_p_value'] < 0.05 else "No statistically significant difference in final performance was detected."}
+  {"The strategies differ significantly in final asymptotic performance." if fr["t_p_value"] < 0.05 else "No statistically significant difference in final performance was detected."}
 
 2. SAMPLE EFFICIENCY AND CONVERGENCE DYNAMICS
 --------------------------------------------------------------------------------
@@ -529,7 +533,7 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
         pd.DataFrame(csv_rows).to_csv(csv_path, index=False)
         print(f"Generated CSV table: {csv_path}")
 
-    def generate_comparison_report(self, strategies: List[str]) -> pd.DataFrame:
+    def generate_comparison_report(self, strategies: list[str]) -> pd.DataFrame:
         """
         Aggregates summary statistics for all provided strategies and
         generates a Markdown-compatible Pandas DataFrame comparison table.
@@ -656,7 +660,6 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
 RL RESEARCH LAB: UNIFIED STATISTICAL EVALUATION MANUSCRIPT ASSETS
 Strategies compared: {", ".join([s.upper() for s in strategies])}
 Generated: {datetime.date.today().strftime("%Y-%m-%d")}
-================================================================================
 
 """
         for strat1, strat2 in itertools.combinations(strategies, 2):

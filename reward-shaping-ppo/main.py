@@ -1,6 +1,7 @@
-import os
 import argparse
-from experiments.runner import ExperimentRunner
+import os
+
+# ci-trigger
 from analysis.statistics import ExperimentAnalyzer
 from utils.plotting import (
     plot_learning_curves,
@@ -8,12 +9,12 @@ from utils.plotting import (
     plot_training_losses,
 )
 from utils.config import Config
+from utils.plotting import plot_evaluation_curves, plot_learning_curves, plot_training_losses
+
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Modular Research Framework: Reward Shaping Strategies for PPO"
-    )
+    parser = argparse.ArgumentParser(description="Modular Research Framework: Reward Shaping Strategies for PPO")
     parser.add_argument(
         "--config",
         type=str,

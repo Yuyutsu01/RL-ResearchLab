@@ -1,11 +1,9 @@
-import os
-import time
 import json
 import shutil
 from typing import Dict, Any
 import gymnasium as gym
 from stable_baselines3 import PPO
-from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback, EvalCallback
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import (
     EvalCallback,
@@ -14,11 +12,12 @@ from stable_baselines3.common.callbacks import (
 )
 
 
+from callbacks.logging_callback import ResearchLoggingCallback
+from environments.wrapper import RewardShapingWrapper
+from reward_functions import get_reward_shaper
 from utils.config import Config
 from utils.reproducibility import set_seed
-from reward_functions import get_reward_shaper
-from environments.wrapper import RewardShapingWrapper
-from callbacks.logging_callback import ResearchLoggingCallback
+
 
 
 class ExperimentRunner:
@@ -76,7 +75,7 @@ class ExperimentRunner:
 
         return paths
 
-    def run_single_seed(self, seed: int) -> Dict[str, Any]:
+    def run_single_seed(self, seed: int) -> dict[str, Any]:
         """
         Runs the experiment for a single seed.
 
@@ -232,7 +231,7 @@ class ExperimentRunner:
         print(f"Seed {seed} finished successfully in {training_time:.2f} seconds.")
         return summary
 
-    def run_all(self) -> Dict[int, Dict[str, Any]]:
+    def run_all(self) -> dict[int, dict[str, Any]]:
         """
         Runs the experiment sequentially for all seeds defined in the config.
 

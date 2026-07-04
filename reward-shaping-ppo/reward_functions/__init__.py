@@ -1,7 +1,8 @@
-from typing import Dict, Any, Optional
+from typing import Any
+
 from reward_functions.base import RewardShaper
-from reward_functions.identity import IdentityRewardShaper
 from reward_functions.dense import DenseRewardShaper
+from reward_functions.identity import IdentityRewardShaper
 
 
 def get_reward_shaper(

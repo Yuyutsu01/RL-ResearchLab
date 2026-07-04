@@ -1,4 +1,6 @@
 import pytest
+
+# ci-trigger
 from reward_functions import get_reward_shaper
 from reward_functions.identity import IdentityRewardShaper
 
@@ -39,6 +41,7 @@ def test_identity_shaper():
         assert (
             shaped == reward
         ), f"Identity shaper modified reward from {reward} to {shaped}"
+
 
 
 def test_dense_shaper():

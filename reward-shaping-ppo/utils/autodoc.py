@@ -1,7 +1,7 @@
-import os
-import json
-import shutil
+import datetime
 import glob
+import json
+import os
 import re
 import datetime
 from typing import Dict, Any
@@ -73,7 +73,7 @@ class AutoDocManager:
         summary_json_path = os.path.join(results_src_dir, "summary.json")
         stats_data = {}
         if os.path.exists(summary_json_path):
-            with open(summary_json_path, "r") as f:
+            with open(summary_json_path) as f:
                 stats_data = json.load(f)
         else:
             print(f"Warning: summary.json not found in {results_src_dir}")
@@ -199,18 +199,18 @@ class AutoDocManager:
         content = f"""# Experiment Overview: {info['name']} on {env_id}
 
 ## Research Motivation
-{info['motivation']}
+{info["motivation"]}
 
 ## Research Hypothesis
-* **Hypothesis**: {info['hypothesis']}
+* **Hypothesis**: {info["hypothesis"]}
 
 ## Reward Function Mathematical Formulation
 The shaped reward is defined as:
-$${info['math'].replace('$', '')}$$
+$${info["math"].replace("$", "")}$$
 
 ## Implementation Details
 * **Class**: `{strategy.capitalize()}RewardShaper` inside `reward_functions/{strategy}.py`
-* **Mechanics**: {info['details']}
+* **Mechanics**: {info["details"]}
 
 ## Configuration Details
 Hyperparameters and parameters are archived under:
@@ -228,7 +228,7 @@ Hyperparameters and parameters are archived under:
             f.write(content.strip() + "\n")
         print(f"Generated {filepath}")
 
-    def _write_metrics_file(self, dest_dir: str, stats_data: Dict[str, Any]) -> None:
+    def _write_metrics_file(self, dest_dir: str, stats_data: dict[str, Any]) -> None:
         """Generates metrics.md summarizing numerical results."""
         filepath = os.path.join(dest_dir, "metrics.md")
 
@@ -256,7 +256,7 @@ The experiment was run across multiple independent seeds under deterministic set
 
 | Metric | Value |
 | :--- | :--- |
-| **Strategy** | `{stats_data.get('strategy', 'unknown').capitalize()}` |
+| **Strategy** | `{stats_data.get("strategy", "unknown").capitalize()}` |
 | **Seeds Evaluated** | {num_seeds} |
 | **Final Evaluation Reward (Mean)** | {mean_rew_str} |
 | **Standard Deviation (SD)** | {std_rew_str} |
@@ -397,7 +397,7 @@ The objective was to establish the control benchmark baseline using unshaped PPO
 
         # Load existing content
         if os.path.exists(catalog_file):
-            with open(catalog_file, "r") as f:
+            with open(catalog_file) as f:
                 content = f.read()
         else:
             content = header
@@ -463,7 +463,7 @@ The objective was to establish the control benchmark baseline using unshaped PPO
         )
 
         if os.path.exists(index_path):
-            with open(index_path, "r") as f:
+            with open(index_path) as f:
                 lines = f.readlines()
         else:
             lines = ["# Experiment Manifest\n\n", header, divider]
@@ -534,7 +534,7 @@ Maintain a chronological log of framework construction and experimental mileston
         new_entry = f"""
 ## Day {next_day} ({date_str})
 - Completed baseline benchmarking on environment **{env_id}** with **{strategy.upper()}** reward shaping across {num_seeds} seeds.
-- Achieved convergence reward of **{mean_rew:.2f}** in {stats_data.get('mean_training_time_seconds', 0.0):.1f}s.
+- Achieved convergence reward of **{mean_rew:.2f}** in {stats_data.get("mean_training_time_seconds", 0.0):.1f}s.
 - Automatic documentation engine executed, exporting monitor CSV logs, checkpoints, loss curves, and annotated catalog entries under `docs/`.
 """
         # Append only if this day header doesn't exist

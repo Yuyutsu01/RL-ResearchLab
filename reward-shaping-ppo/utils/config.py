@@ -1,4 +1,3 @@
-import yaml
 from dataclasses import dataclass, field
 from typing import Dict, Any, List
 
@@ -27,6 +26,7 @@ class ExperimentConfig:
     )
 
 
+
 @dataclass
 class PPOHyperparameters:
     """Hyperparameters passed directly to Stable-Baselines3 PPO."""
@@ -52,7 +52,8 @@ class RewardShapingConfig:
     """Configuration for the active reward shaping strategy."""
 
     strategy: str = "identity"
-    params: Dict[str, Any] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
+
 
 
 @dataclass
@@ -74,7 +75,7 @@ class Config:
         Returns:
             An instance of Config containing populated configurations.
         """
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             data = yaml.safe_load(f)
 
         # Parse experiment config

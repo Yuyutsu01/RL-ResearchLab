@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from typing import Any
+
 from reward_functions.base import RewardShaper
 
 
@@ -32,7 +33,7 @@ class DenseRewardShaper(RewardShaper):
         self.angle_weight = angle_weight
         self.max_bonus = max_bonus
 
-    def reset(self, initial_state: Any, info: Dict[str, Any]) -> None:
+    def reset(self, initial_state: Any, info: dict[str, Any]) -> None:
         """No state variables are maintained across steps in this strategy."""
         pass
 

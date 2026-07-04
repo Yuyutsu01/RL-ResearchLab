@@ -1,4 +1,5 @@
 import gymnasium as gym
+
 from environments.wrapper import RewardShapingWrapper
 from reward_functions.identity import IdentityRewardShaper
 
@@ -53,6 +54,7 @@ def test_wrapper_preserves_physics_and_termination():
     for observation transitions, termination triggers, and truncation timeouts.
     """
     import numpy as np
+
     from reward_functions import get_reward_shaper
 
     raw_env = gym.make("CartPole-v1")

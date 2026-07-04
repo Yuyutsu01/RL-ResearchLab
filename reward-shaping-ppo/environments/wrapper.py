@@ -1,5 +1,7 @@
+from typing import Any
+
 import gymnasium as gym
-from typing import Tuple, Dict, Any, Optional
+
 from reward_functions.base import RewardShaper
 
 
@@ -31,7 +33,7 @@ class RewardShapingWrapper(gym.Wrapper):
         self._episode_shaped_reward: float = 0.0
         self._episode_length: int = 0
 
-    def reset(self, **kwargs) -> Tuple[Any, Dict[str, Any]]:
+    def reset(self, **kwargs) -> tuple[Any, dict[str, Any]]:
         """
         Resets the environment and the reward shaper.
 
@@ -54,7 +56,7 @@ class RewardShapingWrapper(gym.Wrapper):
 
         return obs, info
 
-    def step(self, action: Any) -> Tuple[Any, float, bool, bool, Dict[str, Any]]:
+    def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any]]:
         """
         Steps the environment, shapes the reward, and accumulates statistics.
 
@@ -65,6 +67,7 @@ class RewardShapingWrapper(gym.Wrapper):
             A tuple of (next observation, shaped reward, terminated, truncated, info dict).
         """
         next_obs, reward, terminated, truncated, info = self.env.step(action)
+        reward = float(reward)
         done = terminated or truncated
 
         # Shape the reward using the transition details

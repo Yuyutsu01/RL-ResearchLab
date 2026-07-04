@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
+
 
 
 class RewardShaper(ABC):
@@ -11,7 +12,7 @@ class RewardShaper(ABC):
     """
 
     @abstractmethod
-    def reset(self, initial_state: Any, info: Dict[str, Any]) -> None:
+    def reset(self, initial_state: Any, info: dict[str, Any]) -> None:
         """
         Resets the internal state of the reward shaper. Called at the start
         of each new episode during environment reset.

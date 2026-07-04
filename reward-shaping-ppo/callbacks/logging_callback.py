@@ -1,4 +1,5 @@
 from collections import deque
+
 from stable_baselines3.common.callbacks import BaseCallback
 
 
@@ -20,9 +21,9 @@ class ResearchLoggingCallback(BaseCallback):
         """
         super().__init__(verbose)
         self.rolling_window = rolling_window
-        self.original_rewards = deque(maxlen=rolling_window)
-        self.shaped_rewards = deque(maxlen=rolling_window)
-        self.episode_lengths = deque(maxlen=rolling_window)
+        self.original_rewards: deque[float] = deque(maxlen=rolling_window)
+        self.shaped_rewards: deque[float] = deque(maxlen=rolling_window)
+        self.episode_lengths: deque[int] = deque(maxlen=rolling_window)
         self.episode_count = 0
 
     def _on_step(self) -> bool:
