@@ -5,7 +5,9 @@ from reward_functions.dense import DenseRewardShaper
 from reward_functions.identity import IdentityRewardShaper
 
 
-def get_reward_shaper(strategy_name: str, params: dict[str, Any] | None = None) -> RewardShaper:
+def get_reward_shaper(
+    strategy_name: str, params: Optional[Dict[str, Any]] = None
+) -> RewardShaper:
     """
     Factory function to retrieve a RewardShaper instance by name.
 
@@ -28,5 +30,9 @@ def get_reward_shaper(strategy_name: str, params: dict[str, Any] | None = None) 
         return IdentityRewardShaper()
     elif name == "dense":
         return DenseRewardShaper(**params)
+    elif name == "pbrs":
+        from reward_functions.pbrs import PBRSRewardShaper
+
+        return PBRSRewardShaper(**params)
     else:
         raise ValueError(f"Unknown reward shaping strategy: '{strategy_name}'")

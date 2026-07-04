@@ -8,6 +8,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from typing import Dict, Any, List, Optional
 from scipy import stats
 
 
@@ -30,7 +31,7 @@ class ExperimentAnalyzer:
         self.base_dir = os.path.abspath(base_dir)
         self.results_dir = os.path.join(self.base_dir, "results", env_id)
 
-    def _find_seeds_for_strategy(self, strategy: str) -> list[str]:
+    def _find_seeds_for_strategy(self, strategy: str) -> List[str]:
         """Finds all seed directory paths for a given reward shaping strategy."""
         strategy_dir = os.path.join(self.results_dir, strategy)
         if not os.path.exists(strategy_dir):
@@ -41,7 +42,7 @@ class ExperimentAnalyzer:
 
     def load_strategy_data(
         self, strategy: str, grid_points: int = 100, rolling_window: int = 10
-    ) -> dict[str, Any] | None:
+    ) -> Optional[Dict[str, Any]]:
         """
         Loads, cleans, and aggregates monitor logs across all seeds for a strategy.
         Interpolates data onto a common grid of step counts to allow cross-seed aggregation.
@@ -56,7 +57,9 @@ class ExperimentAnalyzer:
         """
         seed_paths = self._find_seeds_for_strategy(strategy)
         if not seed_paths:
-            print(f"No log directories found for strategy '{strategy}' in env '{self.env_id}'")
+            print(
+                f"No log directories found for strategy '{strategy}' in env '{self.env_id}'"
+            )
             return None
 
         all_original_rewards = []
@@ -90,20 +93,44 @@ class ExperimentAnalyzer:
 
         for df in seed_dfs:
             # Apply rolling average to smooth individual runs before interpolation
-            orig_vals = df["original_reward"].rolling(window=rolling_window, min_periods=1).mean().values
-            rolling_orig = np.asarray(orig_vals, dtype=float)
-
-            shape_vals = df["shaped_reward"].rolling(window=rolling_window, min_periods=1).mean().values
-            rolling_shape = np.asarray(shape_vals, dtype=float)
-
-            len_vals = df["l"].rolling(window=rolling_window, min_periods=1).mean().values
-            rolling_len = np.asarray(len_vals, dtype=float)
+            rolling_orig = (
+                df["original_reward"]
+                .rolling(window=rolling_window, min_periods=1)
+                .mean()
+                .values
+            )
+            rolling_shape = (
+                df["shaped_reward"]
+                .rolling(window=rolling_window, min_periods=1)
+                .mean()
+                .values
+            )
+            rolling_len = (
+                df["l"].rolling(window=rolling_window, min_periods=1).mean().values
+            )
 
             # Interpolate onto common step grid
-            xp = np.asarray(df["cumulative_steps"].values, dtype=float)
-            interp_orig = np.interp(grid_steps, xp, rolling_orig, left=rolling_orig[0], right=rolling_orig[-1])
-            interp_shape = np.interp(grid_steps, xp, rolling_shape, left=rolling_shape[0], right=rolling_shape[-1])
-            interp_len = np.interp(grid_steps, xp, rolling_len, left=rolling_len[0], right=rolling_len[-1])
+            interp_orig = np.interp(
+                grid_steps,
+                df["cumulative_steps"].values,
+                rolling_orig,
+                left=rolling_orig[0],
+                right=rolling_orig[-1],
+            )
+            interp_shape = np.interp(
+                grid_steps,
+                df["cumulative_steps"].values,
+                rolling_shape,
+                left=rolling_shape[0],
+                right=rolling_shape[-1],
+            )
+            interp_len = np.interp(
+                grid_steps,
+                df["cumulative_steps"].values,
+                rolling_len,
+                left=rolling_len[0],
+                right=rolling_len[-1],
+            )
 
             all_original_rewards.append(interp_orig)
             all_shaped_rewards.append(interp_shape)
@@ -121,7 +148,11 @@ class ExperimentAnalyzer:
             median = np.median(arr, axis=0)
             sem = stats.sem(arr, axis=0) if arr.shape[0] > 1 else np.zeros_like(mean)
             # 95% Confidence Interval half-width
-            ci = sem * stats.t.ppf((1 + 0.95) / 2.0, arr.shape[0] - 1) if arr.shape[0] > 1 else np.zeros_like(mean)
+            ci = (
+                sem * stats.t.ppf((1 + 0.95) / 2.0, arr.shape[0] - 1)
+                if arr.shape[0] > 1
+                else np.zeros_like(mean)
+            )
             # Handle NaN values from single seed statistics
             ci = np.nan_to_num(ci)
 
@@ -143,7 +174,9 @@ class ExperimentAnalyzer:
             "raw_seeds_count": len(seed_dfs),
         }
 
-    def compute_summary_statistics(self, strategy: str, last_pct: float = 0.10) -> dict[str, Any] | None:
+    def compute_summary_statistics(
+        self, strategy: str, last_pct: float = 0.10
+    ) -> Optional[Dict[str, Any]]:
         """
         Computes final summary statistics (performance at convergence).
         Averages metrics over the final percentage of training steps.
@@ -172,7 +205,9 @@ class ExperimentAnalyzer:
                         # Determine starting index for final window
                         num_episodes = len(df)
                         start_idx = int(num_episodes * (1.0 - last_pct))
-                        final_orig_rewards.append(df["original_reward"].iloc[start_idx:].mean())
+                        final_orig_rewards.append(
+                            df["original_reward"].iloc[start_idx:].mean()
+                        )
                 except Exception as e:
                     print(f"Error loading {csv_path}: {e}")
 
@@ -195,7 +230,11 @@ class ExperimentAnalyzer:
         mean_orig = float(np.mean(orig_arr))
         std_orig = float(np.std(orig_arr))
         sem_orig = float(stats.sem(orig_arr)) if len(orig_arr) > 1 else 0.0
-        ci_orig = float(sem_orig * stats.t.ppf((1 + 0.95) / 2.0, len(orig_arr) - 1)) if len(orig_arr) > 1 else 0.0
+        ci_orig = (
+            float(sem_orig * stats.t.ppf((1 + 0.95) / 2.0, len(orig_arr) - 1))
+            if len(orig_arr) > 1
+            else 0.0
+        )
 
         summary = {
             "strategy": strategy,
@@ -216,8 +255,8 @@ class ExperimentAnalyzer:
         return summary
 
     def get_timesteps_to_thresholds(
-        self, strategy: str, thresholds: list[int] | None = None
-    ) -> dict[int, dict[str, Any]]:
+        self, strategy: str, thresholds: List[int] = None
+    ) -> Dict[int, Dict[str, Any]]:
         """
         Calculates the average timesteps required to reach specific evaluation
         reward thresholds for a given strategy.
@@ -236,7 +275,7 @@ class ExperimentAnalyzer:
         if not seed_paths:
             return {}
 
-        threshold_steps: dict[int, list[float]] = {t: [] for t in thresholds}
+        threshold_steps = {t: [] for t in thresholds}
 
         for path in seed_paths:
             npz_path = os.path.join(path, "evaluations.npz")
@@ -311,7 +350,9 @@ class ExperimentAnalyzer:
             var1, var2 = np.var(group1, ddof=ddof1), np.var(group2, ddof=ddof2)
             mean1, mean2 = np.mean(group1), np.mean(group2)
 
-            denominator = ((n1 - 1) * var1 if n1 > 1 else 0.0) + ((n2 - 1) * var2 if n2 > 1 else 0.0)
+            denominator = ((n1 - 1) * var1 if n1 > 1 else 0.0) + (
+                (n2 - 1) * var2 if n2 > 1 else 0.0
+            )
             divisor = n1 + n2 - 2
 
             if divisor <= 0:
@@ -360,8 +401,12 @@ class ExperimentAnalyzer:
                 v2_clean = v2[~np.isnan(v2)]
 
                 if len(v1_clean) > 1 and len(v2_clean) > 1:
-                    t_stat_t, t_p_t = stats.ttest_ind(v1_clean, v2_clean, equal_var=False)
-                    u_stat_t, u_p_t = stats.mannwhitneyu(v1_clean, v2_clean, alternative="two-sided")
+                    t_stat_t, t_p_t = stats.ttest_ind(
+                        v1_clean, v2_clean, equal_var=False
+                    )
+                    u_stat_t, u_p_t = stats.mannwhitneyu(
+                        v1_clean, v2_clean, alternative="two-sided"
+                    )
                     d_val_t = cohens_d(v1_clean, v2_clean)
                 else:
                     t_stat_t, t_p_t, u_stat_t, u_p_t, d_val_t = 0.0, 1.0, 0.0, 1.0, 0.0
@@ -401,7 +446,9 @@ class ExperimentAnalyzer:
         results = self.perform_statistical_tests(strat1, strat2)
 
         # Save JSON data
-        json_path = os.path.join(paper_assets_dir, f"statistical_tests_{strat1}_vs_{strat2}.json")
+        json_path = os.path.join(
+            paper_assets_dir, f"statistical_tests_{strat1}_vs_{strat2}.json"
+        )
         with open(json_path, "w") as f:
             json.dump(results, f, indent=4)
 
@@ -448,7 +495,11 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
             m1 = t_data.get(f"{strat1}_mean", np.nan)
             m2 = t_data.get(f"{strat2}_mean", np.nan)
 
-            speedup = m1 / m2 if m1 > 0 and m2 > 0 and not np.isnan(m1) and not np.isnan(m2) else np.nan
+            speedup = (
+                m1 / m2
+                if m1 > 0 and m2 > 0 and not np.isnan(m1) and not np.isnan(m2)
+                else np.nan
+            )
             p_val = t_data.get("t_p_value", 1.0)
             d_val = t_data.get("cohens_d", 0.0)
 
@@ -456,9 +507,7 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
             m2_str = f"{m2:.1f}" if not np.isnan(m2) else "N/A"
             speedup_str = f"{speedup:.2f}x" if not np.isnan(speedup) else "N/A"
 
-            report += (
-                f"| Reward {t:3d} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
-            )
+            report += f"| Reward {t:3d} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
 
             csv_rows.append(
                 {
@@ -502,8 +551,8 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
                     {
                         "Strategy": strat.capitalize(),
                         "Seeds": summary["num_seeds"],
-                        "Final Reward (Mean \u00b1 SD)": f"{summary['final_unshaped_reward_mean']:.2f} \u00b1 {summary['final_unshaped_reward_std']:.2f}",
-                        "95% CI": f"\u00b1 {summary['final_unshaped_reward_ci95']:.2f}",
+                        "Final Reward (Mean ± SD)": f"{summary['final_unshaped_reward_mean']:.2f} ± {summary['final_unshaped_reward_std']:.2f}",
+                        "95% CI": f"± {summary['final_unshaped_reward_ci95']:.2f}",
                         "Steps to R>=400": steps_400_str,
                         "Mean Train Time (s)": f"{summary['mean_training_time_seconds']:.1f}s",
                     }
@@ -514,3 +563,169 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
         df.to_csv(csv_path, index=False)
         print(f"\nComparison report saved to {csv_path}")
         return df
+
+    def generate_latex_and_manuscript_assets(self, strategies: List[str]) -> None:
+        """
+        Compiles unified multi-strategy comparison tables, pairwise statistical tests,
+        and LaTeX code for inclusion in the research manuscript.
+        """
+        import shutil
+
+        paper_assets_dir = os.path.join(self.base_dir, "paper_assets")
+        docs_paper_dir = os.path.join(self.base_dir, "docs", "paper")
+        os.makedirs(paper_assets_dir, exist_ok=True)
+        os.makedirs(docs_paper_dir, exist_ok=True)
+
+        # 1. Compile Unified CSV Comparison Table
+        unified_rows = []
+        for strat in strategies:
+            summary = self.compute_summary_statistics(strat)
+            if not summary:
+                continue
+            thresh_data = self.get_timesteps_to_thresholds(strat)
+
+            row = {
+                "Strategy": strat.capitalize(),
+                "Seeds": int(summary["num_seeds"]),
+                "Final Reward (Mean)": float(summary["final_unshaped_reward_mean"]),
+                "Final Reward (Std)": float(summary["final_unshaped_reward_std"]),
+                "95% CI": float(summary["final_unshaped_reward_ci95"]),
+                "Mean Train Time (s)": float(summary["mean_training_time_seconds"]),
+            }
+            # Add steps to thresholds 100, 200, 300, 400, 500
+            for t in [100, 200, 300, 400, 500]:
+                val = thresh_data.get(t, {}).get("mean", np.nan)
+                row[f"Steps to R>={t}"] = float(val) if not np.isnan(val) else np.nan
+
+            unified_rows.append(row)
+
+        df_unified = pd.DataFrame(unified_rows)
+        csv_path_unified = os.path.join(
+            paper_assets_dir, "unified_comparison_table.csv"
+        )
+        df_unified.to_csv(csv_path_unified, index=False)
+        shutil.copy2(
+            csv_path_unified,
+            os.path.join(docs_paper_dir, "unified_comparison_table.csv"),
+        )
+
+        # 2. Compile LaTeX-ready Table
+        latex_table = """% LaTeX table generated by PPO Reward Shaping Analysis Pipeline
+\\begin{table*}[t]
+\\centering
+\\caption{Comparative Performance under Different Reward Shaping Strategies on CartPole-v1 (5 Seeds)}
+\\label{tab:reward_shaping_comparison}
+\\begin{tabular}{lcccccc}
+\\hline
+\\textbf{Strategy} & \\textbf{Final Reward (Mean $\\pm$ SD)} & \\textbf{95\\% CI} & \\textbf{Steps to $\\ge 100$} & \\textbf{Steps to $\\ge 300$} & \\textbf{Steps to $\\ge 500$} & \\textbf{Train Time (s)} \\\\
+\\hline
+"""
+        for row in unified_rows:
+            strat_name = row["Strategy"]
+            final_rew = f"{row['Final Reward (Mean)']:.2f} $\\pm$ {row['Final Reward (Std)']:.2f}"
+            ci = f"$\\pm$ {row['95% CI']:.2f}"
+
+            t100 = (
+                f"{row['Steps to R>=100']:.1f}"
+                if not np.isnan(row["Steps to R>=100"])
+                else "N/A"
+            )
+            t300 = (
+                f"{row['Steps to R>=300']:.1f}"
+                if not np.isnan(row["Steps to R>=300"])
+                else "N/A"
+            )
+            t500 = (
+                f"{row['Steps to R>=500']:.1f}"
+                if not np.isnan(row["Steps to R>=500"])
+                else "N/A"
+            )
+            train_time = f"{row['Mean Train Time (s)']:.1f}s"
+
+            latex_table += f"{strat_name} & {final_rew} & {ci} & {t100} & {t300} & {t500} & {train_time} \\\\\n"
+
+        latex_table += """\\hline
+\\end{tabular}
+\\end{table*}
+"""
+        tex_path = os.path.join(paper_assets_dir, "comparison_table.tex")
+        with open(tex_path, "w") as f_tex:
+            f_tex.write(latex_table)
+        shutil.copy2(tex_path, os.path.join(docs_paper_dir, "comparison_table.tex"))
+
+        # 3. Perform Pairwise Statistical Tests and Compile Unified Report
+        import itertools
+
+        report = f"""================================================================================
+RL RESEARCH LAB: UNIFIED STATISTICAL EVALUATION MANUSCRIPT ASSETS
+Strategies compared: {", ".join([s.upper() for s in strategies])}
+Generated: {datetime.date.today().strftime("%Y-%m-%d")}
+
+"""
+        for strat1, strat2 in itertools.combinations(strategies, 2):
+            results = self.perform_statistical_tests(strat1, strat2)
+
+            json_path = os.path.join(
+                paper_assets_dir, f"statistical_tests_{strat1}_vs_{strat2}.json"
+            )
+            with open(json_path, "w") as f_json:
+                json.dump(results, f_json, indent=4)
+            shutil.copy2(
+                json_path,
+                os.path.join(
+                    docs_paper_dir, f"statistical_tests_{strat1}_vs_{strat2}.json"
+                ),
+            )
+
+            fr = results["final_rewards"]
+            tr = results["thresholds"]
+
+            report += f"""--------------------------------------------------------------------------------
+PAIRWISE COMPARISON: {strat1.upper()} vs. {strat2.upper()}
+--------------------------------------------------------------------------------
+- {strat1.upper()} raw rewards: {fr[f'{strat1}_values']}
+- {strat2.upper()} raw rewards: {fr[f'{strat2}_values']}
+
+Welch's Independent t-test:
+  t-statistic = {fr['t_statistic']:.4f}
+  p-value     = {fr['t_p_value']:.4e} (p < 0.05 is statistically significant)
+
+Mann-Whitney U Rank Test:
+  U-statistic = {fr['u_statistic']:.4f}
+  p-value     = {fr['u_p_value']:.4e}
+
+Effect Size:
+  Cohen's d   = {fr['cohens_d']:.4f} (d > 0.8 represents large effect size)
+
+Conclusion:
+  {"The strategies differ significantly in final asymptotic performance." if fr['t_p_value'] < 0.05 else "No statistically significant difference in final performance was detected."}
+
+Sample Efficiency (Steps to Thresholds):
+| Threshold | {strat1.capitalize()} Mean (Steps) | {strat2.capitalize()} Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+"""
+            for t in [100, 200, 300, 400, 500]:
+                t_data = tr.get(t, {})
+                m1 = t_data.get(f"{strat1}_mean", np.nan)
+                m2 = t_data.get(f"{strat2}_mean", np.nan)
+                speedup = (
+                    m1 / m2
+                    if m1 > 0 and m2 > 0 and not np.isnan(m1) and not np.isnan(m2)
+                    else np.nan
+                )
+                p_val = t_data.get("t_p_value", 1.0)
+                d_val = t_data.get("cohens_d", 0.0)
+
+                m1_str = f"{m1:.1f}" if not np.isnan(m1) else "N/A"
+                m2_str = f"{m2:.1f}" if not np.isnan(m2) else "N/A"
+                speedup_str = f"{speedup:.2f}x" if not np.isnan(speedup) else "N/A"
+
+                report += f"| Reward {t:3d} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
+
+            report += "\n"
+
+        txt_path = os.path.join(paper_assets_dir, "statistical_summary.txt")
+        with open(txt_path, "w") as f_txt:
+            f_txt.write(report)
+        shutil.copy2(txt_path, os.path.join(docs_paper_dir, "statistical_summary.txt"))
+        print(f"Unified statistical manuscript assets generated in {paper_assets_dir}")

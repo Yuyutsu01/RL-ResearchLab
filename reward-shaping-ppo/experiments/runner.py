@@ -1,20 +1,23 @@
 import json
-import os
 import shutil
-import time
-from typing import Any
-
+from typing import Dict, Any
 import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback, EvalCallback
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.callbacks import (
+    EvalCallback,
+    CallbackList,
+    CheckpointCallback,
+)
+
 
 from callbacks.logging_callback import ResearchLoggingCallback
 from environments.wrapper import RewardShapingWrapper
 from reward_functions import get_reward_shaper
 from utils.config import Config
 from utils.reproducibility import set_seed
+
 
 
 class ExperimentRunner:
@@ -40,7 +43,7 @@ class ExperimentRunner:
         self.strategy = self.config.reward_shaping.strategy
         self.experiment_name = self.config.experiment.name
 
-    def _create_directories(self, seed: int) -> dict[str, str]:
+    def _create_directories(self, seed: int) -> Dict[str, str]:
         """
         Creates clean execution subdirectories for a specific seed.
 
@@ -51,11 +54,19 @@ class ExperimentRunner:
 
         paths = {
             "model_dir": os.path.abspath(
-                os.path.join(self.base_dir, "models", self.env_id, self.strategy, seed_suffix)
+                os.path.join(
+                    self.base_dir, "models", self.env_id, self.strategy, seed_suffix
+                )
             ),
-            "log_dir": os.path.abspath(os.path.join(self.base_dir, "logs", self.env_id, self.strategy, seed_suffix)),
+            "log_dir": os.path.abspath(
+                os.path.join(
+                    self.base_dir, "logs", self.env_id, self.strategy, seed_suffix
+                )
+            ),
             "result_dir": os.path.abspath(
-                os.path.join(self.base_dir, "results", self.env_id, self.strategy, seed_suffix)
+                os.path.join(
+                    self.base_dir, "results", self.env_id, self.strategy, seed_suffix
+                )
             ),
         }
 
@@ -75,7 +86,9 @@ class ExperimentRunner:
             A summary dictionary containing experiment diagnostics.
         """
         print("\n========================================================")
-        print(f"Starting Seed {seed} | Environment: {self.env_id} | Strategy: {self.strategy}")
+        print(
+            f"Starting Seed {seed} | Environment: {self.env_id} | Strategy: {self.strategy}"
+        )
         print("========================================================\n")
 
         # Set up reproducibility
@@ -104,14 +117,18 @@ class ExperimentRunner:
             # Monitor logs to CSV
             monitor_csv = os.path.join(paths["result_dir"], "monitor.csv")
             monitored_env = Monitor(
-                shaped_env, filename=monitor_csv, info_keywords=("original_reward", "shaped_reward")
+                shaped_env,
+                filename=monitor_csv,
+                info_keywords=("original_reward", "shaped_reward"),
             )
             return monitored_env
 
         # Evaluation Environment: wrapped in raw/identity wrapper (unbiased target evaluation)
         def make_eval_env():
             raw_env = gym.make(self.env_id)
-            raw_env.action_space.seed(seed + 100)  # Offset seed to prevent initial state correlation
+            raw_env.action_space.seed(
+                seed + 100
+            )  # Offset seed to prevent initial state correlation
             raw_env.observation_space.seed(seed + 100)
 
             identity_shaper = get_reward_shaper("identity")
@@ -119,7 +136,9 @@ class ExperimentRunner:
 
             eval_csv = os.path.join(paths["result_dir"], "eval_monitor.csv")
             monitored_eval_env = Monitor(
-                eval_env, filename=eval_csv, info_keywords=("original_reward", "shaped_reward")
+                eval_env,
+                filename=eval_csv,
+                info_keywords=("original_reward", "shaped_reward"),
             )
             return monitored_eval_env
 
@@ -178,7 +197,11 @@ class ExperimentRunner:
 
         # 4. Train Agent
         start_time = time.time()
-        model.learn(total_timesteps=self.config.experiment.total_timesteps, callback=callbacks, tb_log_name="PPO")
+        model.learn(
+            total_timesteps=self.config.experiment.total_timesteps,
+            callback=callbacks,
+            tb_log_name="PPO",
+        )
         training_time = time.time() - start_time
 
         # 5. Save Final Model

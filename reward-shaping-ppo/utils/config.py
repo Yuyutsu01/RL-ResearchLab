@@ -1,7 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any
-
-import yaml
+from typing import Dict, Any, List
 
 
 @dataclass
@@ -22,8 +20,11 @@ class ExperimentConfig:
     eval_freq: int = 5000
     eval_episodes: int = 10
     checkpoint_freq: int = 20000
-    seeds: list[int] = field(default_factory=lambda: [42])
-    reproducibility: ReproducibilityConfig = field(default_factory=ReproducibilityConfig)
+    seeds: List[int] = field(default_factory=lambda: [42])
+    reproducibility: ReproducibilityConfig = field(
+        default_factory=ReproducibilityConfig
+    )
+
 
 
 @dataclass
@@ -40,7 +41,9 @@ class PPOHyperparameters:
     ent_coef: float = 0.0
     vf_coef: float = 0.5
     max_grad_norm: float = 0.5
-    policy_kwargs: dict[str, Any] = field(default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])})
+    policy_kwargs: Dict[str, Any] = field(
+        default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
+    )
     device: str = "cpu"
 
 
@@ -50,6 +53,7 @@ class RewardShapingConfig:
 
     strategy: str = "identity"
     params: dict[str, Any] = field(default_factory=dict)
+
 
 
 @dataclass
@@ -78,7 +82,8 @@ class Config:
         exp_data = data.get("experiment", {})
         reprod_data = exp_data.get("reproducibility", {})
         reprod_config = ReproducibilityConfig(
-            deterministic=reprod_data.get("deterministic", True), benchmark=reprod_data.get("benchmark", False)
+            deterministic=reprod_data.get("deterministic", True),
+            benchmark=reprod_data.get("benchmark", False),
         )
         experiment_config = ExperimentConfig(
             name=exp_data.get("name", "experiment"),
@@ -104,14 +109,19 @@ class Config:
             ent_coef=float(ppo_data.get("ent_coef", 0.0)),
             vf_coef=float(ppo_data.get("vf_coef", 0.5)),
             max_grad_norm=float(ppo_data.get("max_grad_norm", 0.5)),
-            policy_kwargs=ppo_data.get("policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}),
+            policy_kwargs=ppo_data.get(
+                "policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
+            ),
             device=ppo_data.get("device", "cpu"),
         )
 
         # Parse reward shaping config
         shaping_data = data.get("reward_shaping", {})
         shaping_config = RewardShapingConfig(
-            strategy=shaping_data.get("strategy", "identity"), params=shaping_data.get("params", {})
+            strategy=shaping_data.get("strategy", "identity"),
+            params=shaping_data.get("params", {}),
         )
 
-        return cls(experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config)
+        return cls(
+            experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config
+        )

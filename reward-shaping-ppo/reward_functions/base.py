@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
+
 class RewardShaper(ABC):
     """
     Abstract Base Class for modular reward shaping strategies.
@@ -24,7 +25,13 @@ class RewardShaper(ABC):
 
     @abstractmethod
     def shape_reward(
-        self, state: Any, action: Any, reward: float, next_state: Any, done: bool, info: dict[str, Any]
+        self,
+        state: Any,
+        action: Any,
+        reward: float,
+        next_state: Any,
+        done: bool,
+        info: Dict[str, Any],
     ) -> float:
         """
         Computes the shaped reward for a single transitions.

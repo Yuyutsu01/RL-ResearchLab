@@ -15,7 +15,12 @@ class DenseRewardShaper(RewardShaper):
         R_shaped = R_original + max_bonus - (position_weight * |x'| + angle_weight * |theta'|)
     """
 
-    def __init__(self, position_weight: float = 0.1, angle_weight: float = 1.0, max_bonus: float = 0.0):
+    def __init__(
+        self,
+        position_weight: float = 0.1,
+        angle_weight: float = 1.0,
+        max_bonus: float = 0.0,
+    ):
         """
         Initializes the DenseRewardShaper.
 
@@ -33,7 +38,13 @@ class DenseRewardShaper(RewardShaper):
         pass
 
     def shape_reward(
-        self, state: Any, action: Any, reward: float, next_state: Any, done: bool, info: dict[str, Any]
+        self,
+        state: Any,
+        action: Any,
+        reward: float,
+        next_state: Any,
+        done: bool,
+        info: Dict[str, Any],
     ) -> float:
         """
         Transforms the raw environment reward to a dense signal.

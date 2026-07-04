@@ -52,10 +52,19 @@ class ResearchLoggingCallback(BaseCallback):
 
         # Record metrics if at least one episode has completed
         if len(self.original_rewards) > 0:
-            self.logger.record("rollout/ep_original_rew_mean", sum(self.original_rewards) / len(self.original_rewards))
+            self.logger.record(
+                "rollout/ep_original_rew_mean",
+                sum(self.original_rewards) / len(self.original_rewards),
+            )
         if len(self.shaped_rewards) > 0:
-            self.logger.record("rollout/ep_shaped_rew_mean", sum(self.shaped_rewards) / len(self.shaped_rewards))
+            self.logger.record(
+                "rollout/ep_shaped_rew_mean",
+                sum(self.shaped_rewards) / len(self.shaped_rewards),
+            )
         if len(self.episode_lengths) > 0:
-            self.logger.record("rollout/ep_len_mean", sum(self.episode_lengths) / len(self.episode_lengths))
+            self.logger.record(
+                "rollout/ep_len_mean",
+                sum(self.episode_lengths) / len(self.episode_lengths),
+            )
 
         return True

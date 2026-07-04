@@ -58,7 +58,9 @@ def test_wrapper_preserves_physics_and_termination():
     from reward_functions import get_reward_shaper
 
     raw_env = gym.make("CartPole-v1")
-    dense_shaper = get_reward_shaper("dense", {"position_weight": 0.1, "angle_weight": 1.0})
+    dense_shaper = get_reward_shaper(
+        "dense", {"position_weight": 0.1, "angle_weight": 1.0}
+    )
     wrapped_env = RewardShapingWrapper(gym.make("CartPole-v1"), dense_shaper)
 
     # Reset both with identical seed
@@ -73,10 +75,14 @@ def test_wrapper_preserves_physics_and_termination():
         action = raw_env.action_space.sample()
 
         next_obs_raw, reward_raw, term_raw, trunc_raw, info_raw = raw_env.step(action)
-        next_obs_wrap, reward_wrap, term_wrap, trunc_wrap, info_wrap = wrapped_env.step(action)
+        next_obs_wrap, reward_wrap, term_wrap, trunc_wrap, info_wrap = wrapped_env.step(
+            action
+        )
 
         # Verify state transition equivalence
-        assert np.allclose(next_obs_raw, next_obs_wrap), f"States diverged at step {step_idx}"
+        assert np.allclose(
+            next_obs_raw, next_obs_wrap
+        ), f"States diverged at step {step_idx}"
 
         # Verify termination/truncation equivalence (Episode termination unchanged)
         assert term_raw == term_wrap, f"Termination mismatch at step {step_idx}"
