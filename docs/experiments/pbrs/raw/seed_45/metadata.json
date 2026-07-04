@@ -1,0 +1,11 @@
+{
+    "experiment_name": "cartpole_pbrs",
+    "env_id": "CartPole-v1",
+    "strategy": "pbrs",
+    "seed": 45,
+    "total_timesteps": 100000,
+    "training_time_seconds": 210.1952154636383,
+    "device": "cpu",
+    "final_model_path": "C:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\CartPole-v1\\pbrs\\seed_45\\final_model.zip",
+    "deterministic_execution": true
+}
