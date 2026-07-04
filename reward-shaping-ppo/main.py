@@ -1,16 +1,14 @@
 import argparse
 import os
 
-# ci-trigger
 from analysis.statistics import ExperimentAnalyzer
+from experiments.runner import ExperimentRunner
+from utils.config import Config
 from utils.plotting import (
-    plot_learning_curves,
     plot_evaluation_curves,
+    plot_learning_curves,
     plot_training_losses,
 )
-from utils.config import Config
-from utils.plotting import plot_evaluation_curves, plot_learning_curves, plot_training_losses
-
 
 
 def main():
@@ -46,9 +44,7 @@ def main():
 
     # 2. Phase: Training
     if args.mode in ["train", "all"]:
-        print(
-            f"\n>>> Running Phase: PPO Training on '{env_id}' using strategy '{strategy}'"
-        )
+        print(f"\n>>> Running Phase: PPO Training on '{env_id}' using strategy '{strategy}'")
         runner = ExperimentRunner(config_path=config_path, base_dir=current_dir)
         runner.run_all()
 
@@ -78,32 +74,18 @@ def main():
                 if summary:
                     print(f"\n--- Strategy: {strat.upper()} ---")
                     print(f"  Seeds evaluated: {summary['num_seeds']}")
-                    print(
-                        f"  Final Reward (Mean): {summary['final_unshaped_reward_mean']:.2f}"
-                    )
-                    print(
-                        f"  Final Reward (Std):  {summary['final_unshaped_reward_std']:.2f}"
-                    )
-                    print(
-                        f"  Final Reward (95% CI): ±{summary['final_unshaped_reward_ci95']:.2f}"
-                    )
-                    print(
-                        f"  Mean Training Time:  {summary['mean_training_time_seconds']:.1f}s"
-                    )
+                    print(f"  Final Reward (Mean): {summary['final_unshaped_reward_mean']:.2f}")
+                    print(f"  Final Reward (Std):  {summary['final_unshaped_reward_std']:.2f}")
+                    print(f"  Final Reward (95% CI): ±{summary['final_unshaped_reward_ci95']:.2f}")
+                    print(f"  Mean Training Time:  {summary['mean_training_time_seconds']:.1f}s")
             except Exception:
-                print(
-                    f"Note: Strategy '{strat}' statistics not loaded (this is expected if it hasn't trained yet)."
-                )
+                print(f"Note: Strategy '{strat}' statistics not loaded (this is expected if it hasn't trained yet).")
 
         # Generate comparative dataframe
         try:
             report_df = analyzer.generate_comparison_report(strategies_to_analyze)
             print("\nComparative Summary:")
-            print(
-                report_df.to_markdown(index=False)
-                if hasattr(report_df, "to_markdown")
-                else report_df
-            )
+            print(report_df.to_markdown(index=False) if hasattr(report_df, "to_markdown") else report_df)
         except Exception as e:
             print(f"Note: Comparative report not fully generated: {e}")
 
@@ -143,16 +125,12 @@ def main():
         )
 
         print("Rendering Evaluation curves...")
-        plot_evaluation_curves(
-            env_id=env_id, strategies=strategies_to_plot, base_dir=current_dir
-        )
+        plot_evaluation_curves(env_id=env_id, strategies=strategies_to_plot, base_dir=current_dir)
 
         print("Rendering single-seed Loss metrics...")
         for seed in seeds:
             try:
-                plot_training_losses(
-                    env_id=env_id, strategy=strategy, seed=seed, base_dir=current_dir
-                )
+                plot_training_losses(env_id=env_id, strategy=strategy, seed=seed, base_dir=current_dir)
             except Exception as e:
                 print(f"Skipped loss plotting for seed {seed} due to: {e}")
 

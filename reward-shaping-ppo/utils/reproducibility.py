@@ -1,11 +1,8 @@
 import os
-
-# ci-trigger
 import random
 
 import numpy as np
 import torch
-import os
 
 
 def set_seed(seed: int, deterministic: bool = True, benchmark: bool = False) -> None:

@@ -3,14 +3,8 @@ __pycache__/
 *.pyc
 
 # Model checkpoints and weights zip archives
-models/
-
-# Experiment results, logs, and generated plots
-results/
-logs/
-plots/
+models/**/*.zip
 
 # Local system files
 .DS_Store
 Thumbs.db
-

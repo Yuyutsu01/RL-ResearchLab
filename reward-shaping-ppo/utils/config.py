@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Dict, Any, List
+from typing import Any
+
+import yaml
 
 
 @dataclass
@@ -20,11 +22,8 @@ class ExperimentConfig:
     eval_freq: int = 5000
     eval_episodes: int = 10
     checkpoint_freq: int = 20000
-    seeds: List[int] = field(default_factory=lambda: [42])
-    reproducibility: ReproducibilityConfig = field(
-        default_factory=ReproducibilityConfig
-    )
-
+    seeds: list[int] = field(default_factory=lambda: [42])
+    reproducibility: ReproducibilityConfig = field(default_factory=ReproducibilityConfig)
 
 
 @dataclass
@@ -41,9 +40,7 @@ class PPOHyperparameters:
     ent_coef: float = 0.0
     vf_coef: float = 0.5
     max_grad_norm: float = 0.5
-    policy_kwargs: Dict[str, Any] = field(
-        default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
-    )
+    policy_kwargs: dict[str, Any] = field(default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])})
     device: str = "cpu"
 
 
@@ -53,7 +50,6 @@ class RewardShapingConfig:
 
     strategy: str = "identity"
     params: dict[str, Any] = field(default_factory=dict)
-
 
 
 @dataclass
@@ -109,9 +105,7 @@ class Config:
             ent_coef=float(ppo_data.get("ent_coef", 0.0)),
             vf_coef=float(ppo_data.get("vf_coef", 0.5)),
             max_grad_norm=float(ppo_data.get("max_grad_norm", 0.5)),
-            policy_kwargs=ppo_data.get(
-                "policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
-            ),
+            policy_kwargs=ppo_data.get("policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}),
             device=ppo_data.get("device", "cpu"),
         )
 
@@ -122,6 +116,4 @@ class Config:
             params=shaping_data.get("params", {}),
         )
 
-        return cls(
-            experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config
-        )
+        return cls(experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config)

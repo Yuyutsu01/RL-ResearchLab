@@ -9,7 +9,7 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.config import Config
+from utils.config import Config  # noqa: E402
 
 VALID_TOP_LEVEL_KEYS = {"experiment", "ppo", "reward_shaping"}
 VALID_EXPERIMENT_KEYS = {
