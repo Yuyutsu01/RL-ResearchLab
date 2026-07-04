@@ -11,7 +11,7 @@ class IdentityRewardShaper(RewardShaper):
     Used as the control/baseline strategy for comparative studies.
     """
 
-    def reset(self, initial_state: Any, info: Dict[str, Any]) -> None:
+    def reset(self, initial_state: Any, info: dict[str, Any]) -> None:
         """No internal state to reset."""
         pass
 
@@ -22,7 +22,7 @@ class IdentityRewardShaper(RewardShaper):
         reward: float,
         next_state: Any,
         done: bool,
-        info: Dict[str, Any],
+        info: dict[str, Any],
     ) -> float:
         """Passes the original reward through directly."""
         return reward

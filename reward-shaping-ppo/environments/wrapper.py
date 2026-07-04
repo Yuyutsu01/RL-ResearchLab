@@ -26,7 +26,7 @@ class RewardShapingWrapper(gym.Wrapper):
         self.reward_shaper = reward_shaper
 
         # Track the state before the step action is executed
-        self._current_obs: Optional[Any] = None
+        self._current_obs: Any | None = None
 
         # Running accumulators for evaluation reporting
         self._episode_original_reward: float = 0.0
@@ -66,8 +66,8 @@ class RewardShapingWrapper(gym.Wrapper):
         Returns:
             A tuple of (next observation, shaped reward, terminated, truncated, info dict).
         """
-        next_obs, reward, terminated, truncated, info = self.env.step(action)
-        reward = float(reward)
+        next_obs, raw_reward, terminated, truncated, info = self.env.step(action)
+        reward = float(raw_reward)
         done = terminated or truncated
 
         # Shape the reward using the transition details

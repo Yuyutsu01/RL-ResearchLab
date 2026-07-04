@@ -44,7 +44,7 @@ class DenseRewardShaper(RewardShaper):
         reward: float,
         next_state: Any,
         done: bool,
-        info: Dict[str, Any],
+        info: dict[str, Any],
     ) -> float:
         """
         Transforms the raw environment reward to a dense signal.

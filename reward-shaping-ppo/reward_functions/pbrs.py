@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from typing import Any
+
 from reward_functions.base import RewardShaper
 
 
@@ -37,12 +38,10 @@ class PBRSRewardShaper(RewardShaper):
 
         ptype = potential_type.lower().strip()
         if ptype not in ["l1", "l2"]:
-            raise ValueError(
-                f"potential_type must be 'l1' or 'l2', got '{potential_type}'"
-            )
+            raise ValueError(f"potential_type must be 'l1' or 'l2', got '{potential_type}'")
         self.potential_type = ptype
 
-    def reset(self, initial_state: Any, info: Dict[str, Any]) -> None:
+    def reset(self, initial_state: Any, info: dict[str, Any]) -> None:
         """Stateless design doesn't require maintaining history variables across resets."""
         pass
 
@@ -78,7 +77,7 @@ class PBRSRewardShaper(RewardShaper):
         reward: float,
         next_state: Any,
         done: bool,
-        info: Dict[str, Any],
+        info: dict[str, Any],
     ) -> float:
         phi_s = self._potential(state)
         # Boundary Condition: Phi(s_terminal) = 0.0

@@ -5,9 +5,7 @@ from reward_functions.dense import DenseRewardShaper
 from reward_functions.identity import IdentityRewardShaper
 
 
-def get_reward_shaper(
-    strategy_name: str, params: Optional[Dict[str, Any]] = None
-) -> RewardShaper:
+def get_reward_shaper(strategy_name: str, params: dict[str, Any] | None = None) -> RewardShaper:
     """
     Factory function to retrieve a RewardShaper instance by name.
 
