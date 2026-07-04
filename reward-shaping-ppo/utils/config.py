@@ -1,16 +1,20 @@
 import yaml
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
+
 
 @dataclass
 class ReproducibilityConfig:
     """Configuration for seeds and PyTorch backends."""
+
     deterministic: bool = True
     benchmark: bool = False
+
 
 @dataclass
 class ExperimentConfig:
     """Configuration for experiment metadata, checkpoints, and paths."""
+
     name: str
     env_id: str
     total_timesteps: int
@@ -18,11 +22,15 @@ class ExperimentConfig:
     eval_episodes: int = 10
     checkpoint_freq: int = 20000
     seeds: List[int] = field(default_factory=lambda: [42])
-    reproducibility: ReproducibilityConfig = field(default_factory=ReproducibilityConfig)
+    reproducibility: ReproducibilityConfig = field(
+        default_factory=ReproducibilityConfig
+    )
+
 
 @dataclass
 class PPOHyperparameters:
     """Hyperparameters passed directly to Stable-Baselines3 PPO."""
+
     learning_rate: float = 0.0003
     n_steps: int = 2048
     batch_size: int = 64
@@ -33,18 +41,24 @@ class PPOHyperparameters:
     ent_coef: float = 0.0
     vf_coef: float = 0.5
     max_grad_norm: float = 0.5
-    policy_kwargs: Dict[str, Any] = field(default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])})
+    policy_kwargs: Dict[str, Any] = field(
+        default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
+    )
     device: str = "cpu"
+
 
 @dataclass
 class RewardShapingConfig:
     """Configuration for the active reward shaping strategy."""
+
     strategy: str = "identity"
     params: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class Config:
     """The root configuration object containing all sub-configs."""
+
     experiment: ExperimentConfig
     ppo: PPOHyperparameters
     reward_shaping: RewardShapingConfig
@@ -53,10 +67,10 @@ class Config:
     def from_yaml(cls, file_path: str) -> "Config":
         """
         Loads configuration from a YAML file and parses it into typed dataclasses.
-        
+
         Args:
             file_path: The absolute or relative path to the YAML file.
-            
+
         Returns:
             An instance of Config containing populated configurations.
         """
@@ -68,7 +82,7 @@ class Config:
         reprod_data = exp_data.get("reproducibility", {})
         reprod_config = ReproducibilityConfig(
             deterministic=reprod_data.get("deterministic", True),
-            benchmark=reprod_data.get("benchmark", False)
+            benchmark=reprod_data.get("benchmark", False),
         )
         experiment_config = ExperimentConfig(
             name=exp_data.get("name", "experiment"),
@@ -78,7 +92,7 @@ class Config:
             eval_episodes=exp_data.get("eval_episodes", 10),
             checkpoint_freq=exp_data.get("checkpoint_freq", 20000),
             seeds=exp_data.get("seeds", [42]),
-            reproducibility=reprod_config
+            reproducibility=reprod_config,
         )
 
         # Parse PPO hyperparameters
@@ -94,19 +108,19 @@ class Config:
             ent_coef=float(ppo_data.get("ent_coef", 0.0)),
             vf_coef=float(ppo_data.get("vf_coef", 0.5)),
             max_grad_norm=float(ppo_data.get("max_grad_norm", 0.5)),
-            policy_kwargs=ppo_data.get("policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}),
-            device=ppo_data.get("device", "cpu")
+            policy_kwargs=ppo_data.get(
+                "policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
+            ),
+            device=ppo_data.get("device", "cpu"),
         )
 
         # Parse reward shaping config
         shaping_data = data.get("reward_shaping", {})
         shaping_config = RewardShapingConfig(
             strategy=shaping_data.get("strategy", "identity"),
-            params=shaping_data.get("params", {})
+            params=shaping_data.get("params", {}),
         )
 
         return cls(
-            experiment=experiment_config,
-            ppo=ppo_config,
-            reward_shaping=shaping_config
+            experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config
         )

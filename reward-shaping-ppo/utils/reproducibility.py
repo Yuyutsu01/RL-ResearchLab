@@ -2,33 +2,33 @@ import random
 import numpy as np
 import torch
 import os
-from typing import Optional
+
 
 def set_seed(seed: int, deterministic: bool = True, benchmark: bool = False) -> None:
     """
     Sets the random seed for Python, NumPy, PyTorch, and the environment.
-    
+
     Args:
         seed: The integer seed to set.
-        deterministic: If True, configures PyTorch backends to prioritize 
+        deterministic: If True, configures PyTorch backends to prioritize
             deterministic execution over speed.
-        benchmark: If True, allows CuDNN to profile and select the fastest kernel 
+        benchmark: If True, allows CuDNN to profile and select the fastest kernel
             algorithms (used when deterministic is False).
     """
     # Set seed for Python built-in random module
     random.seed(seed)
-    
+
     # Set seed for NumPy operations
     np.random.seed(seed)
-    
+
     # Set seed for PyTorch CPU operations
     torch.manual_seed(seed)
-    
+
     # Set seed for PyTorch GPU operations (if available)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
-    
+
     # Configure deterministic algorithms in PyTorch
     if deterministic:
         # Forces PyTorch to use deterministic algorithms where possible
