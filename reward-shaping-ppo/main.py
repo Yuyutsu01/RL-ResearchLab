@@ -12,7 +12,9 @@ from utils.plotting import (
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Modular Research Framework: Reward Shaping Strategies for PPO")
+    parser = argparse.ArgumentParser(
+        description="Modular Research Framework: Reward Shaping Strategies for PPO"
+    )
     parser.add_argument(
         "--config",
         type=str,
@@ -26,11 +28,23 @@ def main():
         default="all",
         help="Execution mode: train (run PPO training), analyze (run statistics), plot (render curves), all (run all phases)",
     )
+    parser.add_argument(
+        "--cross-analyze",
+        action="store_true",
+        help="Run cross-environment generalization analysis across all environments",
+    )
 
     args = parser.parse_args()
 
     # 1. Resolve configuration paths
     current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    if args.cross_analyze:
+        from analysis.cross_analysis import CrossEnvironmentAnalyzer
+        analyzer = CrossEnvironmentAnalyzer(base_dir=current_dir)
+        analyzer.run_analysis()
+        return
+
     config_path = os.path.abspath(args.config)
 
     if not os.path.exists(config_path):
@@ -44,7 +58,9 @@ def main():
 
     # 2. Phase: Training
     if args.mode in ["train", "all"]:
-        print(f"\n>>> Running Phase: PPO Training on '{env_id}' using strategy '{strategy}'")
+        print(
+            f"\n>>> Running Phase: PPO Training on '{env_id}' using strategy '{strategy}'"
+        )
         runner = ExperimentRunner(config_path=config_path, base_dir=current_dir)
         runner.run_all()
 
@@ -74,18 +90,32 @@ def main():
                 if summary:
                     print(f"\n--- Strategy: {strat.upper()} ---")
                     print(f"  Seeds evaluated: {summary['num_seeds']}")
-                    print(f"  Final Reward (Mean): {summary['final_unshaped_reward_mean']:.2f}")
-                    print(f"  Final Reward (Std):  {summary['final_unshaped_reward_std']:.2f}")
-                    print(f"  Final Reward (95% CI): ±{summary['final_unshaped_reward_ci95']:.2f}")
-                    print(f"  Mean Training Time:  {summary['mean_training_time_seconds']:.1f}s")
+                    print(
+                        f"  Final Reward (Mean): {summary['final_unshaped_reward_mean']:.2f}"
+                    )
+                    print(
+                        f"  Final Reward (Std):  {summary['final_unshaped_reward_std']:.2f}"
+                    )
+                    print(
+                        f"  Final Reward (95% CI): ±{summary['final_unshaped_reward_ci95']:.2f}"
+                    )
+                    print(
+                        f"  Mean Training Time:  {summary['mean_training_time_seconds']:.1f}s"
+                    )
             except Exception:
-                print(f"Note: Strategy '{strat}' statistics not loaded (this is expected if it hasn't trained yet).")
+                print(
+                    f"Note: Strategy '{strat}' statistics not loaded (this is expected if it hasn't trained yet)."
+                )
 
         # Generate comparative dataframe
         try:
             report_df = analyzer.generate_comparison_report(strategies_to_analyze)
             print("\nComparative Summary:")
-            print(report_df.to_markdown(index=False) if hasattr(report_df, "to_markdown") else report_df)
+            print(
+                report_df.to_markdown(index=False)
+                if hasattr(report_df, "to_markdown")
+                else report_df
+            )
         except Exception as e:
             print(f"Note: Comparative report not fully generated: {e}")
 
@@ -125,12 +155,16 @@ def main():
         )
 
         print("Rendering Evaluation curves...")
-        plot_evaluation_curves(env_id=env_id, strategies=strategies_to_plot, base_dir=current_dir)
+        plot_evaluation_curves(
+            env_id=env_id, strategies=strategies_to_plot, base_dir=current_dir
+        )
 
         print("Rendering single-seed Loss metrics...")
         for seed in seeds:
             try:
-                plot_training_losses(env_id=env_id, strategy=strategy, seed=seed, base_dir=current_dir)
+                plot_training_losses(
+                    env_id=env_id, strategy=strategy, seed=seed, base_dir=current_dir
+                )
             except Exception as e:
                 print(f"Skipped loss plotting for seed {seed} due to: {e}")
 

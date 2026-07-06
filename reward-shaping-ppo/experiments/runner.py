@@ -55,11 +55,19 @@ class ExperimentRunner:
 
         paths = {
             "model_dir": os.path.abspath(
-                os.path.join(self.base_dir, "models", self.env_id, self.strategy, seed_suffix)
+                os.path.join(
+                    self.base_dir, "models", self.env_id, self.strategy, seed_suffix
+                )
             ),
-            "log_dir": os.path.abspath(os.path.join(self.base_dir, "logs", self.env_id, self.strategy, seed_suffix)),
+            "log_dir": os.path.abspath(
+                os.path.join(
+                    self.base_dir, "logs", self.env_id, self.strategy, seed_suffix
+                )
+            ),
             "result_dir": os.path.abspath(
-                os.path.join(self.base_dir, "results", self.env_id, self.strategy, seed_suffix)
+                os.path.join(
+                    self.base_dir, "results", self.env_id, self.strategy, seed_suffix
+                )
             ),
         }
 
@@ -79,7 +87,9 @@ class ExperimentRunner:
             A summary dictionary containing experiment diagnostics.
         """
         print("\n========================================================")
-        print(f"Starting Seed {seed} | Environment: {self.env_id} | Strategy: {self.strategy}")
+        print(
+            f"Starting Seed {seed} | Environment: {self.env_id} | Strategy: {self.strategy}"
+        )
         print("========================================================\n")
 
         # Set up reproducibility
@@ -102,7 +112,9 @@ class ExperimentRunner:
             raw_env.action_space.seed(seed)
             raw_env.observation_space.seed(seed)
 
-            shaper = get_reward_shaper(self.strategy, self.config.reward_shaping.params)
+            shaper = get_reward_shaper(
+                self.strategy, self.config.reward_shaping.params, env_id=self.env_id
+            )
             shaped_env = RewardShapingWrapper(raw_env, shaper)
 
             # Monitor logs to CSV
@@ -117,7 +129,9 @@ class ExperimentRunner:
         # Evaluation Environment: wrapped in raw/identity wrapper (unbiased target evaluation)
         def make_eval_env():
             raw_env = gym.make(self.env_id)
-            raw_env.action_space.seed(seed + 100)  # Offset seed to prevent initial state correlation
+            raw_env.action_space.seed(
+                seed + 100
+            )  # Offset seed to prevent initial state correlation
             raw_env.observation_space.seed(seed + 100)
 
             identity_shaper = get_reward_shaper("identity")

@@ -98,10 +98,14 @@ class AutoDocManager:
                     shutil.copy2(src_file, os.path.join(dest_seed_path, filename))
 
         # Copy configuration to raw folder
-        config_src = os.path.join(self.base_dir, "configs", f"{env_id.lower()}_{strategy_clean}.yaml")
+        config_src = os.path.join(
+            self.base_dir, "configs", f"{env_id.lower()}_{strategy_clean}.yaml"
+        )
         if not os.path.exists(config_src):
             # Fallback to general baseline config
-            config_src = os.path.join(self.base_dir, "configs", f"{env_id.lower()}_baseline.yaml")
+            config_src = os.path.join(
+                self.base_dir, "configs", f"{env_id.lower()}_baseline.yaml"
+            )
         if os.path.exists(config_src):
             shutil.copy2(config_src, os.path.join(exp_raw_dest_dir, "config.yaml"))
 
@@ -115,7 +119,9 @@ class AutoDocManager:
             seed_name = os.path.basename(seed_path)
             seed_plots_src = os.path.join(plots_src_dir, strategy_clean, seed_name)
             if os.path.exists(seed_plots_src):
-                dest_seed_plots = os.path.join(exp_plots_dest_dir, strategy_clean, seed_name)
+                dest_seed_plots = os.path.join(
+                    exp_plots_dest_dir, strategy_clean, seed_name
+                )
                 os.makedirs(dest_seed_plots, exist_ok=True)
                 for plot_file_path in glob.glob(os.path.join(seed_plots_src, "*.*")):
                     shutil.copy2(plot_file_path, dest_seed_plots)
@@ -127,10 +133,14 @@ class AutoDocManager:
         self._write_metrics_file(exp_dest_dir, stats_data)
 
         # 6. Generate results summary.md
-        self._write_results_summary_file(results_dest_dir, strategy_clean, env_id, stats_data)
+        self._write_results_summary_file(
+            results_dest_dir, strategy_clean, env_id, stats_data
+        )
 
         # 7. Copy and Annotate Evidence in docs/evidence/
-        self._populate_evidence_catalog(plots_src_dir, env_id, strategy_clean, stats_data)
+        self._populate_evidence_catalog(
+            plots_src_dir, env_id, strategy_clean, stats_data
+        )
 
         # 8. Update experiment manifest (docs/experiment_index.md)
         self._update_experiment_index(env_id, strategy_clean, stats_data)
@@ -230,8 +240,12 @@ Hyperparameters and parameters are archived under:
         total_time = stats_data.get("total_training_time_seconds", 0.0)
 
         # Round values for display if numeric
-        mean_rew_str = f"{mean_rew:.2f}" if isinstance(mean_rew, int | float) else str(mean_rew)
-        std_rew_str = f"{std_rew:.2f}" if isinstance(std_rew, int | float) else str(std_rew)
+        mean_rew_str = (
+            f"{mean_rew:.2f}" if isinstance(mean_rew, int | float) else str(mean_rew)
+        )
+        std_rew_str = (
+            f"{std_rew:.2f}" if isinstance(std_rew, int | float) else str(std_rew)
+        )
         ci_rew_str = f"{ci_rew:.2f}" if isinstance(ci_rew, int | float) else str(ci_rew)
 
         content = f"""# Quantitative Metrics Summary
@@ -266,8 +280,12 @@ The experiment was run across multiple independent seeds under deterministic set
         ci_rew = stats_data.get("final_unshaped_reward_ci95", "N/A")
         mean_time = stats_data.get("mean_training_time_seconds", 0.0)
 
-        mean_rew_str = f"{mean_rew:.2f}" if isinstance(mean_rew, int | float) else str(mean_rew)
-        std_rew_str = f"{std_rew:.2f}" if isinstance(std_rew, int | float) else str(std_rew)
+        mean_rew_str = (
+            f"{mean_rew:.2f}" if isinstance(mean_rew, int | float) else str(mean_rew)
+        )
+        std_rew_str = (
+            f"{std_rew:.2f}" if isinstance(std_rew, int | float) else str(std_rew)
+        )
         ci_rew_str = f"{ci_rew:.2f}" if isinstance(ci_rew, int | float) else str(ci_rew)
 
         if strategy == "dense":
@@ -352,8 +370,12 @@ The objective was to establish the control benchmark baseline using unshaped PPO
         evidence_dir = os.path.join(self.docs_dir, "evidence")
 
         # Target paths in evidence/
-        learning_curve_dest = os.path.join(evidence_dir, f"{env_id}_{strategy}_learning_curve.png")
-        eval_curve_dest = os.path.join(evidence_dir, f"{env_id}_{strategy}_eval_curve.png")
+        learning_curve_dest = os.path.join(
+            evidence_dir, f"{env_id}_{strategy}_learning_curve.png"
+        )
+        eval_curve_dest = os.path.join(
+            evidence_dir, f"{env_id}_{strategy}_eval_curve.png"
+        )
 
         # Sources
         learning_src = os.path.join(plots_src_dir, "training_original_reward.png")
@@ -377,7 +399,9 @@ The objective was to establish the control benchmark baseline using unshaped PPO
             content = header
 
         mean_rew = stats_data.get("final_unshaped_reward_mean", "N/A")
-        mean_rew_str = f"{mean_rew:.2f}" if isinstance(mean_rew, int | float) else str(mean_rew)
+        mean_rew_str = (
+            f"{mean_rew:.2f}" if isinstance(mean_rew, int | float) else str(mean_rew)
+        )
 
         # Write new annotation block for this strategy
         if strategy == "dense":
@@ -423,12 +447,16 @@ The objective was to establish the control benchmark baseline using unshaped PPO
                 f.write(annotation)
             print(f"Updated evidence catalog at {catalog_file}")
 
-    def _update_experiment_index(self, env_id: str, strategy: str, stats_data: dict[str, Any]) -> None:
+    def _update_experiment_index(
+        self, env_id: str, strategy: str, stats_data: dict[str, Any]
+    ) -> None:
         """Appends/updates a row for the current experiment in docs/experiment_index.md."""
         index_path = os.path.join(self.docs_dir, "experiment_index.md")
 
         header = "| Experiment ID | Environment | Reward Strategy | Status | Date | Seeds | Configuration | Result Location | Plots | Summary |\n"
-        divider = "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n"
+        divider = (
+            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n"
+        )
 
         if os.path.exists(index_path):
             with open(index_path) as f:
@@ -457,7 +485,9 @@ The objective was to establish the control benchmark baseline using unshaped PPO
             f.writelines(lines)
         print(f"Updated experiment manifest: {index_path}")
 
-    def _update_project_journal(self, env_id: str, strategy: str, stats_data: dict[str, Any]) -> None:
+    def _update_project_journal(
+        self, env_id: str, strategy: str, stats_data: dict[str, Any]
+    ) -> None:
         """Adds a chronological development log entry to docs/project_journal.md."""
         journal_path = os.path.join(self.docs_dir, "project_journal.md")
 
