@@ -1,0 +1,9 @@
+{
+    "strategy": "pbrs",
+    "num_seeds": 5,
+    "final_unshaped_reward_mean": -200.0,
+    "final_unshaped_reward_std": 0.0,
+    "final_unshaped_reward_ci95": 0.0,
+    "mean_training_time_seconds": 594.1553029537201,
+    "total_training_time_seconds": 2970.7765147686005
+}

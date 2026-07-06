@@ -6,11 +6,11 @@ The experiment was run across multiple independent seeds under deterministic set
 | :--- | :--- |
 | **Strategy** | `Pbrs` |
 | **Seeds Evaluated** | 5 |
-| **Final Evaluation Reward (Mean)** | 500.00 |
-| **Standard Deviation (SD)** | 0.00 |
-| **95% Confidence Interval** | ± 0.00 |
-| **Mean Training Time (Seconds)** | 183.98s |
-| **Total Computation Duration** | 919.88s |
+| **Final Evaluation Reward (Mean)** | 50.85 |
+| **Standard Deviation (SD)** | 45.18 |
+| **95% Confidence Interval** | ± 62.72 |
+| **Mean Training Time (Seconds)** | 643.99s |
+| **Total Computation Duration** | 3219.94s |
 | **Sample Efficiency (Timesteps)** | 100,000 |
 
 *Detailed learning charts, evaluation plots, and policy gradients are archived in the [plots/](plots/) directory.*

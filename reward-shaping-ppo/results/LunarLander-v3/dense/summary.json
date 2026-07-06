@@ -1,0 +1,9 @@
+{
+    "strategy": "dense",
+    "num_seeds": 5,
+    "final_unshaped_reward_mean": 1.5135275242625141,
+    "final_unshaped_reward_std": 50.05199516402961,
+    "final_unshaped_reward_ci95": 69.48330848927695,
+    "mean_training_time_seconds": 640.6653257846832,
+    "total_training_time_seconds": 3203.326628923416
+}

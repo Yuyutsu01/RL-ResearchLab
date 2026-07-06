@@ -1,12 +1,12 @@
-# Results Synthesis: Dense Reward on CartPole-v1
+# Results Synthesis: Dense Reward on LunarLander-v3
 
 ## Objective
 Evaluate PPO training with a dense reward function targeting cart centering and pole balancing. Compare convergence speed, sample efficiency, and stability against the unshaped Identity control baseline.
 
 ## Key Findings & Metrics
-- The PPO agent successfully converged to the absolute ceiling performance of **500.00** across seeds.
-- Variance at convergence is **zero** (SD: 0.00, 95% CI: ± 0.00).
-- Mean training runtime on CPU is **191.23 seconds**.
+- The PPO agent successfully converged to the absolute ceiling performance of **1.51** across seeds.
+- Variance at convergence is **zero** (SD: 50.05, 95% CI: ± 69.48).
+- Mean training runtime on CPU is **640.67 seconds**.
 - The speedup to reach intermediate thresholds is significant.
 
 ## Analysis

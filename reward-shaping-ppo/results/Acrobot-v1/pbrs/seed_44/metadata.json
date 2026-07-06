@@ -1,0 +1,11 @@
+{
+    "experiment_name": "acrobot_pbrs",
+    "env_id": "Acrobot-v1",
+    "strategy": "pbrs",
+    "seed": 44,
+    "total_timesteps": 100000,
+    "training_time_seconds": 628.0297999382019,
+    "device": "cpu",
+    "final_model_path": "c:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\Acrobot-v1\\pbrs\\seed_44\\final_model.zip",
+    "deterministic_execution": true
+}

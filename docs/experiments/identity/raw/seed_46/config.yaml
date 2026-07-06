@@ -1,7 +1,7 @@
-# Experiment settings for PPO Reward Shaping Baseline on CartPole-v1
+# Experiment settings for PPO Reward Shaping Baseline on LunarLander-v3
 experiment:
-  name: "cartpole_baseline"
-  env_id: "CartPole-v1"
+  name: "lunarlander_identity"
+  env_id: "LunarLander-v3"
   total_timesteps: 100000
   eval_freq: 5000
   eval_episodes: 10

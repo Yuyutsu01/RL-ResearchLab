@@ -1,0 +1,11 @@
+{
+    "experiment_name": "acrobot_dense",
+    "env_id": "Acrobot-v1",
+    "strategy": "dense",
+    "seed": 42,
+    "total_timesteps": 100000,
+    "training_time_seconds": 608.6029965877533,
+    "device": "cpu",
+    "final_model_path": "c:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\Acrobot-v1\\dense\\seed_42\\final_model.zip",
+    "deterministic_execution": true
+}
