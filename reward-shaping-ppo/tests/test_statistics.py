@@ -139,7 +139,9 @@ class TestGetTimestepsToThresholds:
         base_dir, env_id, strategy = synthetic_single_strategy_tree
         analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(base_dir))
 
-        result = analyzer.get_timesteps_to_thresholds(strategy, thresholds=[100, 200, 300, 400, 500])
+        result = analyzer.get_timesteps_to_thresholds(
+            strategy, thresholds=[100, 200, 300, 400, 500]
+        )
         prev_mean = 0
         for t in [100, 200, 300, 400, 500]:
             current_mean = result[t]["mean"]

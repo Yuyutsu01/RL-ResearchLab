@@ -58,9 +58,15 @@ class TestAutoDocManagerStructure:
         manager.document_experiment(env_id=env_id, strategy="identity")
 
         docs_dir = os.path.join(manager.workspace_root, "docs")
-        assert os.path.exists(os.path.join(docs_dir, "experiments", "identity", "overview.md"))
-        assert os.path.exists(os.path.join(docs_dir, "experiments", "identity", "metrics.md"))
-        assert os.path.exists(os.path.join(docs_dir, "results", "identity", "summary.md"))
+        assert os.path.exists(
+            os.path.join(docs_dir, "experiments", "identity", "overview.md")
+        )
+        assert os.path.exists(
+            os.path.join(docs_dir, "experiments", "identity", "metrics.md")
+        )
+        assert os.path.exists(
+            os.path.join(docs_dir, "results", "identity", "summary.md")
+        )
         assert os.path.exists(os.path.join(docs_dir, "experiment_index.md"))
         assert os.path.exists(os.path.join(docs_dir, "project_journal.md"))
 

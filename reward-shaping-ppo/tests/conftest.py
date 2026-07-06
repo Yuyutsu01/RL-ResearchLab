@@ -21,10 +21,16 @@ def synthetic_results_tree(tmp_path):
             np.random.seed(seed)
             episode_lengths = np.random.randint(20, 200, size=num_episodes)
             if strategy == "dense":
-                base_rewards = np.linspace(50, 500, num_episodes) + np.random.normal(0, 20, num_episodes)
-                shaped_rewards = base_rewards + np.random.uniform(0.5, 2.0, num_episodes)
+                base_rewards = np.linspace(50, 500, num_episodes) + np.random.normal(
+                    0, 20, num_episodes
+                )
+                shaped_rewards = base_rewards + np.random.uniform(
+                    0.5, 2.0, num_episodes
+                )
             else:
-                base_rewards = np.linspace(30, 500, num_episodes) + np.random.normal(0, 25, num_episodes)
+                base_rewards = np.linspace(30, 500, num_episodes) + np.random.normal(
+                    0, 25, num_episodes
+                )
                 shaped_rewards = base_rewards.copy()
 
             base_rewards = np.clip(base_rewards, 0, 500)
@@ -52,7 +58,12 @@ def synthetic_results_tree(tmp_path):
             eval_timesteps = np.linspace(1000, 10000, num_evals).astype(int)
             eval_results = np.array(
                 [
-                    np.clip(np.full(eval_episodes, 50 + (i * 50)) + np.random.normal(0, 5, eval_episodes), 0, 500)
+                    np.clip(
+                        np.full(eval_episodes, 50 + (i * 50))
+                        + np.random.normal(0, 5, eval_episodes),
+                        0,
+                        500,
+                    )
                     for i in range(num_evals)
                 ]
             )
@@ -148,7 +159,12 @@ def synthetic_single_strategy_tree(tmp_path):
         ],
         dtype=float,
     )
-    np.savez(seed_dir / "evaluations.npz", timesteps=timesteps, results=results, ep_lengths=np.full_like(results, 200))
+    np.savez(
+        seed_dir / "evaluations.npz",
+        timesteps=timesteps,
+        results=results,
+        ep_lengths=np.full_like(results, 200),
+    )
 
     metadata = {
         "experiment_name": "test_simple",
