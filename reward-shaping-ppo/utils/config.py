@@ -23,7 +23,9 @@ class ExperimentConfig:
     eval_episodes: int = 10
     checkpoint_freq: int = 20000
     seeds: list[int] = field(default_factory=lambda: [42])
-    reproducibility: ReproducibilityConfig = field(default_factory=ReproducibilityConfig)
+    reproducibility: ReproducibilityConfig = field(
+        default_factory=ReproducibilityConfig
+    )
 
 
 @dataclass
@@ -40,7 +42,9 @@ class PPOHyperparameters:
     ent_coef: float = 0.0
     vf_coef: float = 0.5
     max_grad_norm: float = 0.5
-    policy_kwargs: dict[str, Any] = field(default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])})
+    policy_kwargs: dict[str, Any] = field(
+        default_factory=lambda: {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
+    )
     device: str = "cpu"
 
 
@@ -105,7 +109,9 @@ class Config:
             ent_coef=float(ppo_data.get("ent_coef", 0.0)),
             vf_coef=float(ppo_data.get("vf_coef", 0.5)),
             max_grad_norm=float(ppo_data.get("max_grad_norm", 0.5)),
-            policy_kwargs=ppo_data.get("policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}),
+            policy_kwargs=ppo_data.get(
+                "policy_kwargs", {"net_arch": dict(pi=[64, 64], vf=[64, 64])}
+            ),
             device=ppo_data.get("device", "cpu"),
         )
 
@@ -116,4 +122,6 @@ class Config:
             params=shaping_data.get("params", {}),
         )
 
-        return cls(experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config)
+        return cls(
+            experiment=experiment_config, ppo=ppo_config, reward_shaping=shaping_config
+        )

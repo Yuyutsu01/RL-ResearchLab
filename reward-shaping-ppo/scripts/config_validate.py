@@ -64,7 +64,9 @@ def validate_config(filepath: str) -> list[str]:
         if isinstance(reprod, dict):
             unknown_reprod = set(reprod.keys()) - VALID_REPRODUCIBILITY_KEYS
             if unknown_reprod:
-                errors.append(f"Unknown 'experiment.reproducibility' keys: {unknown_reprod}")
+                errors.append(
+                    f"Unknown 'experiment.reproducibility' keys: {unknown_reprod}"
+                )
 
     if "ppo" in data and isinstance(data["ppo"], dict):
         unknown_ppo = set(data["ppo"].keys()) - VALID_PPO_KEYS
@@ -88,8 +90,12 @@ def main():
     if len(sys.argv) > 1:
         files = sys.argv[1:]
     else:
-        configs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configs")
-        files = glob.glob(os.path.join(configs_dir, "*.yaml")) + glob.glob(os.path.join(configs_dir, "*.yml"))
+        configs_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configs"
+        )
+        files = glob.glob(os.path.join(configs_dir, "*.yaml")) + glob.glob(
+            os.path.join(configs_dir, "*.yml")
+        )
 
     if not files:
         sys.exit(0)
