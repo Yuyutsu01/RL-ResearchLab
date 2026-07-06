@@ -1,38 +1,93 @@
 ================================================================================
-RL RESEARCH LAB: STATISTICAL EVALUATION MANUSCRIPT ASSETS
-Comparing: IDENTITY (Control) vs. DENSE (Shaped)
-Generated: 2026-07-02
+RL RESEARCH LAB: UNIFIED STATISTICAL EVALUATION MANUSCRIPT ASSETS
+Strategies compared: DENSE, IDENTITY, PBRS
+Generated: 2026-07-06
 ================================================================================
 
-1. FINAL DETErMINISTIC EVALUATION PERFORMANCE
 --------------------------------------------------------------------------------
-- IDENTITY raw rewards: [500.0, 500.0, 500.0, 500.0, 500.0]
-- DENSE raw rewards: [500.0, 500.0, 500.0, 500.0, 500.0]
+PAIRWISE COMPARISON: DENSE vs. IDENTITY
+--------------------------------------------------------------------------------
+- DENSE raw rewards: [-125.9276623, -119.12847909999998, -128.5448955, -152.46509840000002, -95.4419756]
+- IDENTITY raw rewards: [-19.060771400000004, -83.66916840000002, -31.903209299999997, 162.72266290000002, 56.546794]
 
 Welch's Independent t-test:
-  t-statistic = nan
-  p-value     = nan (p < 0.05 is statistically significant)
+  t-statistic = -3.2274
+  p-value     = 2.8279e-02 (p < 0.05 is statistically significant)
 
 Mann-Whitney U Rank Test:
-  U-statistic = 12.5000
-  p-value     = 1.0000e+00
+  U-statistic = 0.0000
+  p-value     = 7.9365e-03
 
 Effect Size:
-  Cohen's d   = 0.0000 (d > 0.8 represents large effect size)
+  Cohen's d   = -2.0412 (d > 0.8 represents large effect size)
+
+Conclusion:
+  The strategies differ significantly in final asymptotic performance.
+
+Sample Efficiency (Steps to Thresholds):
+| Threshold | Dense Mean (Steps) | Identity Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Reward 100 | N/A                   | 95000.0               | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 200 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 300 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 400 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 500 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+
+--------------------------------------------------------------------------------
+PAIRWISE COMPARISON: DENSE vs. PBRS
+--------------------------------------------------------------------------------
+- DENSE raw rewards: [-125.9276623, -119.12847909999998, -128.5448955, -152.46509840000002, -95.4419756]
+- PBRS raw rewards: [103.0310211, -92.00936970000001, -151.8366507, -30.011808600000002, -35.850833900000005]
+
+Welch's Independent t-test:
+  t-statistic = -1.9173
+  p-value     = 1.2158e-01 (p < 0.05 is statistically significant)
+
+Mann-Whitney U Rank Test:
+  U-statistic = 4.0000
+  p-value     = 9.5238e-02
+
+Effect Size:
+  Cohen's d   = -1.2126 (d > 0.8 represents large effect size)
 
 Conclusion:
   No statistically significant difference in final performance was detected.
 
-2. SAMPLE EFFICIENCY AND CONVERGENCE DYNAMICS
---------------------------------------------------------------------------------
-Average timesteps required to reach unshaped evaluation reward thresholds:
-
-| Threshold | Identity Mean (Steps) | Dense Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
+Sample Efficiency (Steps to Thresholds):
+| Threshold | Dense Mean (Steps) | Pbrs Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Reward 100 | 5000.0                | 5000.0                | 1.00x          | nan | 0.0000 |
-| Reward 200 | 8000.0                | 6000.0                | 1.33x          | 2.4288e-01 | 0.8000 |
-| Reward 300 | 9000.0                | 8000.0                | 1.12x          | 6.7072e-01 | 0.2828 |
-| Reward 400 | 14000.0               | 15000.0               | 0.93x          | 6.1010e-01 | -0.3381 |
-| Reward 500 | 23000.0               | 23000.0               | 1.00x          | 1.0000e+00 | 0.0000 |
+| Reward 100 | N/A                   | 95000.0               | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 200 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 300 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 400 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 500 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
 
-================================================================================
+--------------------------------------------------------------------------------
+PAIRWISE COMPARISON: IDENTITY vs. PBRS
+--------------------------------------------------------------------------------
+- IDENTITY raw rewards: [-19.060771400000004, -83.66916840000002, -31.903209299999997, 162.72266290000002, 56.546794]
+- PBRS raw rewards: [103.0310211, -92.00936970000001, -151.8366507, -30.011808600000002, -35.850833900000005]
+
+Welch's Independent t-test:
+  t-statistic = 0.9683
+  p-value     = 3.6124e-01 (p < 0.05 is statistically significant)
+
+Mann-Whitney U Rank Test:
+  U-statistic = 18.0000
+  p-value     = 3.0952e-01
+
+Effect Size:
+  Cohen's d   = 0.6124 (d > 0.8 represents large effect size)
+
+Conclusion:
+  No statistically significant difference in final performance was detected.
+
+Sample Efficiency (Steps to Thresholds):
+| Threshold | Identity Mean (Steps) | Pbrs Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Reward 100 | 95000.0               | 95000.0               | 1.00x          | 1.0000e+00 | 0.0000 |
+| Reward 200 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 300 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 400 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward 500 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+
