@@ -33,6 +33,17 @@ def main():
         action="store_true",
         help="Run cross-environment generalization analysis across all environments",
     )
+    parser.add_argument(
+        "--tune",
+        action="store_true",
+        help="Run hyperparameter tuning coordinate sweep on the specified environment",
+    )
+    parser.add_argument(
+        "--tune-timesteps",
+        type=int,
+        default=None,
+        help="Number of timesteps per run during tuning sweeps (default: 100000)",
+    )
 
     args = parser.parse_args()
 
@@ -49,6 +60,22 @@ def main():
 
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found at: {config_path}")
+
+    if args.tune:
+        from experiments.tuning_runner import HyperparameterTuner
+        from analysis.tune_analysis import export_optimized_config
+        from utils.plotting import plot_hyperparameter_sensitivity
+
+        print(f"Loading baseline config for tuning: {config_path}")
+        config = Config.from_yaml(config_path)
+        env_id = config.experiment.env_id
+
+        tuner = HyperparameterTuner(base_config_path=config_path, base_dir=current_dir)
+        tuner.run_tuning(total_timesteps=args.tune_timesteps)
+
+        export_optimized_config(env_id=env_id, base_dir=current_dir)
+        plot_hyperparameter_sensitivity(env_id=env_id, base_dir=current_dir)
+        return
 
     print(f"Loading config: {config_path}")
     config = Config.from_yaml(config_path)

@@ -33,6 +33,8 @@ def get_reward_shaper(
         params = {}
 
     name = strategy_name.lower().strip()
+    if "tuning/" in name:
+        name = "identity"
 
     if name == "identity":
         return IdentityRewardShaper()
