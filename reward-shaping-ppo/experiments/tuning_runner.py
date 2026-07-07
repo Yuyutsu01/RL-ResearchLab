@@ -158,8 +158,8 @@ class HyperparameterTuner:
         if total_timesteps is not None:
             config_dict["experiment"]["total_timesteps"] = total_timesteps
 
-        # Default config forces CUDA device usage for efficiency
-        config_dict["ppo"]["device"] = "cuda"
+        # Use the device configuration specified in the baseline config
+        config_dict["ppo"]["device"] = self.base_config.ppo.device
 
         # Apply parameter overrides
         for k, v in hparam_overrides.items():

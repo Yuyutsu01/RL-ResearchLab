@@ -109,7 +109,7 @@ def export_optimized_config(env_id: str, base_dir: str = ".") -> str:
     # Update configurations
     config_dict["experiment"]["name"] = f"{env_id.lower().replace('-', '_')}_optimized_study"
     config_dict["experiment"]["seeds"] = [42, 43, 44, 45, 46, 47, 48, 49, 50, 51] # Restore full seeds study list
-    config_dict["ppo"]["device"] = "cuda"
+    config_dict["ppo"]["device"] = config_dict["ppo"].get("device", "cpu")
 
     # Merge optimized parameters
     for k, v in optimized_ppo.items():
