@@ -512,3 +512,80 @@ def plot_performance_distributions(
     fig.suptitle(f"Robustness Distribution Across Seeds: {env_id}", y=0.98)
     fig.tight_layout()
     save_figure(fig, os.path.join(plots_dir, "robustness_distributions"))
+
+
+def plot_hyperparameter_sensitivity(env_id: str, base_dir: str = ".") -> None:
+    """
+    Renders 3x3 grid plots showing parameter option vs. mean reward and mean AUC
+    with error bars (std deviation) for all 7 swept PPO hyperparameters.
+    """
+    summary_path = os.path.join(base_dir, "results", env_id, "tuning_summary.json")
+    if not os.path.exists(summary_path):
+        print(f"No tuning summary found at {summary_path}. Skipping sensitivity plotting.")
+        return
+
+    with open(summary_path, "r") as f:
+        summary_data = json.load(f)
+
+    plots_dir = os.path.join(base_dir, "plots", env_id)
+    os.makedirs(plots_dir, exist_ok=True)
+
+    axes = ["learning_rate", "batch_size", "gamma", "gae_lambda", "ent_coef", "clip_range", "net_arch"]
+
+    # 1. Plot Reward Sensitivity
+    fig_rew, axs_rew = plt.subplots(3, 3, figsize=(15, 12))
+    axs_rew = axs_rew.flatten()
+
+    for idx, axis in enumerate(axes):
+        ax = axs_rew[idx]
+        if axis not in summary_data:
+            ax.text(0.5, 0.5, "No Data", ha="center", va="center")
+            continue
+
+        options = summary_data[axis]
+        x_labels = list(options.keys())
+        means = [options[x]["mean_reward"] for x in x_labels]
+        stds = [options[x]["std_reward"] for x in x_labels]
+
+        ax.errorbar(x_labels, means, yerr=stds, fmt='o-', linewidth=2, elinewidth=1.5, capsize=4, color="#377eb8")
+        ax.set_title(axis.replace("_", " ").title())
+        ax.set_xlabel("Value Option")
+        ax.set_ylabel("Final Reward")
+        ax.grid(True, alpha=0.3)
+
+    # Hide unused panels
+    for idx in range(len(axes), 9):
+        fig_rew.delaxes(axs_rew[idx])
+
+    fig_rew.suptitle(f"PPO Hyperparameter Sensitivity Analysis (Final Reward): {env_id}", y=0.98)
+    fig_rew.tight_layout()
+    save_figure(fig_rew, os.path.join(plots_dir, "hyperparameter_sensitivity_reward"))
+
+    # 2. Plot AUC Sensitivity
+    fig_auc, axs_auc = plt.subplots(3, 3, figsize=(15, 12))
+    axs_auc = axs_auc.flatten()
+
+    for idx, axis in enumerate(axes):
+        ax = axs_auc[idx]
+        if axis not in summary_data:
+            ax.text(0.5, 0.5, "No Data", ha="center", va="center")
+            continue
+
+        options = summary_data[axis]
+        x_labels = list(options.keys())
+        means = [options[x]["mean_auc"] for x in x_labels]
+        stds = [options[x]["std_auc"] for x in x_labels]
+
+        ax.errorbar(x_labels, means, yerr=stds, fmt='s-', linewidth=2, elinewidth=1.5, capsize=4, color="#ff7f00")
+        ax.set_title(axis.replace("_", " ").title())
+        ax.set_xlabel("Value Option")
+        ax.set_ylabel("Normalized AUC")
+        ax.grid(True, alpha=0.3)
+
+    # Hide unused panels
+    for idx in range(len(axes), 9):
+        fig_auc.delaxes(axs_auc[idx])
+
+    fig_auc.suptitle(f"PPO Hyperparameter Sensitivity Analysis (Normalized AUC): {env_id}", y=0.98)
+    fig_auc.tight_layout()
+    save_figure(fig_auc, os.path.join(plots_dir, "hyperparameter_sensitivity_auc"))
