@@ -1,15 +1,16 @@
 experiment:
-  name: "mountaincar_smoke_test"
-  env_id: "MountainCar-v0"
+  name: mountaincar_smoke_test
+  env_id: MountainCar-v0
   total_timesteps: 10000
   eval_freq: 2000
   eval_episodes: 5
   checkpoint_freq: 5000
-  seeds: [42]
+  seeds:
+  - 42
+  - 43
   reproducibility:
     deterministic: true
     benchmark: false
-
 ppo:
   learning_rate: 0.0003
   n_steps: 512
@@ -21,14 +22,17 @@ ppo:
   ent_coef: 0.0
   vf_coef: 0.5
   max_grad_norm: 0.5
-  device: "cpu"
+  device: cuda
   policy_kwargs:
     net_arch:
-      pi: [32, 32]
-      vf: [32, 32]
-
+      pi:
+      - 32
+      - 32
+      vf:
+      - 32
+      - 32
 reward_shaping:
-  strategy: "pbrs"
+  strategy: pbrs
   params:
     height_weight: 1.0
     velocity_weight: 10.0
