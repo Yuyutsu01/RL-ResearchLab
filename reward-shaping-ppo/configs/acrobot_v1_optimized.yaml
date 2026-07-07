@@ -22,7 +22,7 @@ experiment:
 ppo:
   batch_size: 64
   clip_range: 0.2
-  device: cuda
+  device: cpu
   ent_coef: 0.0
   gae_lambda: 0.95
   gamma: 0.99

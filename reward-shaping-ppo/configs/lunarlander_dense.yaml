@@ -30,7 +30,7 @@ ppo:
   ent_coef: 0.0
   vf_coef: 0.5
   max_grad_norm: 0.5
-  device: cuda
+  device: cpu
   policy_kwargs:
     net_arch:
       pi:
