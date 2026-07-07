@@ -252,3 +252,71 @@ class TestGenerateComparisonReport:
         analyzer.generate_comparison_report(strategies)
         csv_path = base_dir / "results" / env_id / "comparison_report.csv"
         assert csv_path.exists()
+
+
+class TestNewStatisticalMethods:
+    def test_calculate_auc(self, synthetic_results_tree):
+        base_dir, env_id, _, _ = synthetic_results_tree
+        analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(base_dir))
+        raw_aucs, norm_aucs = analyzer.calculate_auc("identity", max_steps=5000.0)
+        assert len(raw_aucs) == 2
+        assert len(norm_aucs) == 2
+        for r, n in zip(raw_aucs, norm_aucs):
+            assert r >= 0.0
+            assert n >= 0.0
+            assert np.isclose(n, r / 5000.0)
+
+    def test_calculate_cliffs_delta(self, synthetic_results_tree):
+        base_dir, env_id, _, _ = synthetic_results_tree
+        analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(base_dir))
+
+        g1 = [1.0, 2.0, 3.0, 4.0, 5.0]
+        g2 = [1.0, 2.0, 3.0, 4.0, 5.0]
+        delta = analyzer.calculate_cliffs_delta(g1, g2)
+        assert delta == 0.0
+
+        g3 = [6.0, 7.0, 8.0, 9.0, 10.0]
+        delta_pos = analyzer.calculate_cliffs_delta(g3, g1)
+        assert delta_pos == 1.0
+
+        delta_neg = analyzer.calculate_cliffs_delta(g1, g3)
+        assert delta_neg == -1.0
+
+    def test_calculate_bootstrap_ci(self, synthetic_results_tree):
+        base_dir, env_id, _, _ = synthetic_results_tree
+        analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(base_dir))
+
+        data = [10.0, 10.0, 10.0]
+        lower, upper = analyzer.calculate_bootstrap_ci(data, num_resamples=100)
+        assert lower == 10.0
+        assert upper == 10.0
+
+        data_var = [1.0, 2.0, 3.0, 4.0, 5.0]
+        lower_v, upper_v = analyzer.calculate_bootstrap_ci(data_var, num_resamples=100)
+        assert lower_v <= upper_v
+        assert 1.0 <= lower_v <= 5.0
+        assert 1.0 <= upper_v <= 5.0
+
+    def test_apply_benjamini_hochberg(self, synthetic_results_tree):
+        base_dir, env_id, _, _ = synthetic_results_tree
+        analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(base_dir))
+
+        p_values = [0.001, 0.01, 0.04, 0.5, 0.8]
+        reject = analyzer.apply_benjamini_hochberg(p_values, alpha=0.05)
+        assert len(reject) == 5
+        assert reject[0] is True
+        assert reject[1] is True
+        assert reject[2] is False
+        assert reject[3] is False
+        assert reject[4] is False
+
+    def test_get_timesteps_to_fractional_thresholds(self, synthetic_results_tree):
+        base_dir, env_id, _, _ = synthetic_results_tree
+        analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=str(base_dir))
+
+        results = analyzer.get_timesteps_to_fractional_thresholds("identity")
+        for f in [0.10, 0.20, 0.40, 0.60, 0.80, 0.90, 0.95, 1.00]:
+            assert f in results
+            assert "mean" in results[f]
+            assert "std" in results[f]
+            assert "values" in results[f]
