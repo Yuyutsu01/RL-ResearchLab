@@ -172,18 +172,10 @@ class ExperimentAnalyzer:
         }
 
     def compute_summary_statistics(
-        self, strategy: str, last_pct: float = 0.10
+        self, strategy: str, last_pct: float = 0.10, step_limit: float | None = None
     ) -> dict[str, Any] | None:
         """
-        Computes final summary statistics (performance at convergence).
-        Averages metrics over the final percentage of training steps.
-
-        Args:
-            strategy: Reward shaping strategy name.
-            last_pct: The percentage of final training steps to average over.
-
-        Returns:
-            A summary dictionary containing final mean, std, CI, and training time.
+        Computes summary statistics, optionally up to step_limit.
         """
         seed_paths = self._find_seeds_for_strategy(strategy)
         if not seed_paths:
@@ -199,12 +191,16 @@ class ExperimentAnalyzer:
                 try:
                     df = pd.read_csv(csv_path, skiprows=1)
                     if len(df) > 0:
-                        # Determine starting index for final window
-                        num_episodes = len(df)
-                        start_idx = int(num_episodes * (1.0 - last_pct))
-                        final_orig_rewards.append(
-                            df["original_reward"].iloc[start_idx:].mean()
-                        )
+                        df["cumulative_steps"] = df["l"].cumsum()
+                        if step_limit is not None:
+                            df = df[df["cumulative_steps"] <= step_limit]
+                        if len(df) > 0:
+                            # Determine starting index for final window
+                            num_episodes = len(df)
+                            start_idx = int(num_episodes * (1.0 - last_pct))
+                            final_orig_rewards.append(
+                                df["original_reward"].iloc[start_idx:].mean()
+                            )
                 except Exception as e:
                     print(f"Error loading {csv_path}: {e}")
 
@@ -214,7 +210,14 @@ class ExperimentAnalyzer:
                 try:
                     with open(meta_path) as f:
                         meta = json.load(f)
-                    training_times.append(meta.get("training_time_seconds", 0.0))
+                    total_t = meta.get("total_timesteps", 1.0)
+                    raw_time = meta.get("training_time_seconds", 0.0)
+                    if step_limit is not None and total_t > 0:
+                        # Estimate time linearly up to step_limit
+                        t_ratio = min(1.0, step_limit / total_t)
+                        training_times.append(raw_time * t_ratio)
+                    else:
+                        training_times.append(raw_time)
                 except Exception as e:
                     print(f"Error loading {meta_path}: {e}")
 
@@ -243,36 +246,209 @@ class ExperimentAnalyzer:
             "total_training_time_seconds": float(np.sum(time_arr)),
         }
 
-        # Save summary to strategy folder
-        summary_path = os.path.join(self.results_dir, strategy, "summary.json")
-        os.makedirs(os.path.dirname(summary_path), exist_ok=True)
-        with open(summary_path, "w") as f:
-            json.dump(summary, f, indent=4)
+        # Save summary to strategy folder only if step_limit is None (main summary)
+        if step_limit is None:
+            summary_path = os.path.join(self.results_dir, strategy, "summary.json")
+            os.makedirs(os.path.dirname(summary_path), exist_ok=True)
+            with open(summary_path, "w") as f:
+                json.dump(summary, f, indent=4)
 
         return summary
 
+    def _get_default_thresholds(self) -> list[float]:
+        """Returns standard evaluation thresholds for the environment."""
+        if "MountainCar" in self.env_id:
+            return [-180.0, -160.0, -140.0, -120.0, -110.0]
+        elif "Acrobot" in self.env_id:
+            return [-300.0, -200.0, -150.0, -100.0, -80.0]
+        elif "LunarLander" in self.env_id:
+            return [-100.0, 0.0, 50.0, 100.0, 200.0]
+        else: # CartPole and defaults
+            return [100.0, 200.0, 300.0, 400.0, 500.0]
+
+    def _get_key_threshold(self) -> float:
+        """Returns the primary target threshold for the environment."""
+        if "MountainCar" in self.env_id:
+            return -120.0
+        elif "Acrobot" in self.env_id:
+            return -100.0
+        elif "LunarLander" in self.env_id:
+            return 100.0
+        else: # CartPole and defaults
+            return 400.0
+
+    def calculate_auc(self, strategy: str, max_steps: float) -> tuple[list[float], list[float]]:
+        """
+        Computes raw and normalized AUC per seed up to max_steps using evaluations.npz.
+        Returns (raw_aucs, normalized_aucs) lists.
+        """
+        seed_paths = self._find_seeds_for_strategy(strategy)
+        raw_aucs = []
+        norm_aucs = []
+        for path in seed_paths:
+            npz_path = os.path.join(path, "evaluations.npz")
+            if os.path.exists(npz_path):
+                try:
+                    data = np.load(npz_path)
+                    timesteps = data["timesteps"]
+                    results = data["results"]
+                    mean_rewards = np.mean(results, axis=1)
+
+                    # Filter to max_steps
+                    mask = timesteps <= max_steps
+                    s_steps = list(timesteps[mask])
+                    s_rews = list(mean_rewards[:len(s_steps)])
+
+                    if not s_steps:
+                        raw_aucs.append(0.0)
+                        norm_aucs.append(0.0)
+                        continue
+
+                    # Prepend 0 if not present
+                    if s_steps[0] > 0:
+                        s_steps.insert(0, 0.0)
+                        s_rews.insert(0, s_rews[0])
+
+                    # Append max_steps if last step is less
+                    if s_steps[-1] < max_steps:
+                        s_steps.append(max_steps)
+                        s_rews.append(s_rews[-1])
+
+                    # Integrate using numpy's trapezoidal method compatible with numpy 2.0+
+                    if hasattr(np, "trapezoid"):
+                        raw_auc = np.trapezoid(s_rews, s_steps)
+                    else:
+                        raw_auc = np.trapz(s_rews, s_steps)
+
+                    norm_auc = raw_auc / max_steps if max_steps > 0 else 0.0
+                    raw_aucs.append(float(raw_auc))
+                    norm_aucs.append(float(norm_auc))
+                except Exception as e:
+                    print(f"Error calculating AUC in {npz_path}: {e}")
+                    raw_aucs.append(0.0)
+                    norm_aucs.append(0.0)
+            else:
+                raw_aucs.append(0.0)
+                norm_aucs.append(0.0)
+        return raw_aucs, norm_aucs
+
+    def calculate_cliffs_delta(self, group1: list[float], group2: list[float]) -> float:
+        """
+        Computes Cliff's Delta non-parametric effect size between group1 and group2.
+        """
+        n1, n2 = len(group1), len(group2)
+        if n1 == 0 or n2 == 0:
+            return 0.0
+
+        greater = 0
+        less = 0
+        for x in group1:
+            for y in group2:
+                if x > y:
+                    greater += 1
+                elif x < y:
+                    less += 1
+        return (greater - less) / (n1 * n2)
+
+    def calculate_bootstrap_ci(
+        self, data: list[float], confidence: float = 0.95, num_resamples: int = 10000
+    ) -> tuple[float, float]:
+        """
+        Computes bootstrap percentile confidence interval for the mean of the data.
+        """
+        n = len(data)
+        if n == 0:
+            return 0.0, 0.0
+        if n == 1:
+            return float(data[0]), float(data[0])
+
+        arr = np.array(data)
+        if np.all(arr == arr[0]):
+            return float(arr[0]), float(arr[0])
+
+        np.random.seed(42)  # For reproducibility
+        boot_means = []
+        for _ in range(num_resamples):
+            sample = np.random.choice(arr, size=n, replace=True)
+            boot_means.append(np.mean(sample))
+
+        lower_pct = (1.0 - confidence) / 2.0 * 100.0
+        upper_pct = (1.0 + confidence) / 2.0 * 100.0
+
+        lower = np.percentile(boot_means, lower_pct)
+        upper = np.percentile(boot_means, upper_pct)
+        return float(lower), float(upper)
+
+    def apply_benjamini_hochberg(self, p_values: list[float], alpha: float = 0.05) -> list[bool]:
+        """
+        Applies Benjamini-Hochberg False Discovery Rate correction to p-values.
+        Returns a list of boolean flags indicating significance.
+        """
+        m = len(p_values)
+        if m == 0:
+            return []
+
+        indexed_p = sorted(enumerate(p_values), key=lambda x: x[1])
+        reject = [False] * m
+        max_k = -1
+        for rank, (orig_idx, p_val) in enumerate(indexed_p):
+            k = rank + 1
+            if p_val <= (k / m) * alpha:
+                max_k = rank
+
+        if max_k >= 0:
+            for rank in range(max_k + 1):
+                orig_idx = indexed_p[rank][0]
+                reject[orig_idx] = True
+
+        return reject
+
+    def get_timesteps_to_fractional_thresholds(
+        self, strategy: str, fractions: list[float] | None = None
+    ) -> dict[float, dict[str, Any]]:
+        """
+        Calculates average timesteps required to reach fractional thresholds of optimal performance span.
+        """
+        if fractions is None:
+            fractions = [0.10, 0.20, 0.40, 0.60, 0.80, 0.90, 0.95, 1.00]
+
+        if "MountainCar" in self.env_id:
+            r_min, r_max = -200.0, -110.0
+        elif "Acrobot" in self.env_id:
+            r_min, r_max = -500.0, -80.0
+        elif "LunarLander" in self.env_id:
+            r_min, r_max = -250.0, 200.0
+        else: # CartPole and defaults
+            r_min, r_max = 10.0, 500.0
+
+        thresholds = [r_min + f * (r_max - r_min) for f in fractions]
+        raw_results = self.get_timesteps_to_thresholds(strategy, thresholds=thresholds)
+
+        fractional_results = {}
+        for f, t in zip(fractions, thresholds):
+            if t in raw_results:
+                fractional_results[f] = raw_results[t]
+            else:
+                closest_key = min(raw_results.keys(), key=lambda k: abs(k - t))
+                fractional_results[f] = raw_results[closest_key]
+
+        return fractional_results
+
     def get_timesteps_to_thresholds(
-        self, strategy: str, thresholds: list[int] | None = None
-    ) -> dict[int, dict[str, Any]]:
+        self, strategy: str, thresholds: list[float] | list[int] | None = None
+    ) -> dict[float, dict[str, Any]]:
         """
         Calculates the average timesteps required to reach specific evaluation
         reward thresholds for a given strategy.
-
-        Args:
-            strategy: Reward shaping strategy name.
-            thresholds: List of reward thresholds to track.
-
-        Returns:
-            A dictionary mapping threshold -> {mean, std, values_per_seed}
         """
         if thresholds is None:
-            thresholds = [100, 200, 300, 400, 500]
+            thresholds = self._get_default_thresholds()
 
         seed_paths = self._find_seeds_for_strategy(strategy)
         if not seed_paths:
             return {}
 
-        threshold_steps: dict[int, list[float]] = {t: [] for t in thresholds}
+        threshold_steps = {float(t): [] for t in thresholds}
 
         for path in seed_paths:
             npz_path = os.path.join(path, "evaluations.npz")
@@ -286,34 +462,33 @@ class ExperimentAnalyzer:
                     for t in thresholds:
                         reached_idx = np.where(mean_rewards >= t)[0]
                         if len(reached_idx) > 0:
-                            # Record first timestep where threshold was met
                             step = float(timesteps[reached_idx[0]])
-                            threshold_steps[t].append(step)
+                            threshold_steps[float(t)].append(step)
                         else:
-                            # Penalty or marker if it never reached the threshold
-                            threshold_steps[t].append(np.nan)
+                            threshold_steps[float(t)].append(np.nan)
                 except Exception as e:
                     print(f"Error reading evaluations in {npz_path}: {e}")
 
-        # Compute summary statistics per threshold
         results_dict = {}
         for t in thresholds:
-            vals = np.array(threshold_steps[t])
+            vals = np.array(threshold_steps[float(t)])
             valid_vals = vals[~np.isnan(vals)]
 
             mean_val = float(np.mean(valid_vals)) if len(valid_vals) > 0 else np.nan
             std_val = float(np.std(valid_vals)) if len(valid_vals) > 0 else np.nan
 
-            results_dict[t] = {
+            results_dict[float(t)] = {
                 "mean": mean_val,
                 "std": std_val,
-                "values": list(vals),  # Includes NaNs to track failed seeds
+                "values": list(vals),
             }
 
         return results_dict
 
-    def get_final_evaluation_rewards(self, strategy: str) -> list[float]:
-        """Retrieves the final unshaped evaluation score across seeds for a strategy."""
+    def get_final_evaluation_rewards(
+        self, strategy: str, step_limit: float | None = None
+    ) -> list[float]:
+        """Retrieves the final unshaped evaluation score across seeds for a strategy, optionally sliced at step_limit."""
         seed_paths = self._find_seeds_for_strategy(strategy)
         rewards = []
         for path in seed_paths:
@@ -321,8 +496,17 @@ class ExperimentAnalyzer:
             if os.path.exists(npz_path):
                 try:
                     data = np.load(npz_path)
+                    timesteps = data["timesteps"]
                     results = data["results"]
-                    rewards.append(float(np.mean(results[-1])))
+                    if step_limit is not None:
+                        mask = timesteps <= step_limit
+                        if np.sum(mask) > 0:
+                            idx = np.where(mask)[0][-1]
+                            rewards.append(float(np.mean(results[idx])))
+                        else:
+                            rewards.append(float(np.mean(results[0])))
+                    else:
+                        rewards.append(float(np.mean(results[-1])))
                 except Exception as e:
                     print(f"Error loading final eval in {npz_path}: {e}")
         return rewards
@@ -388,7 +572,7 @@ class ExperimentAnalyzer:
         thresh2 = self.get_timesteps_to_thresholds(strat2)
         thresholds_comparison = {}
 
-        for t in [100, 200, 300, 400, 500]:
+        for t in self._get_default_thresholds():
             if t in thresh1 and t in thresh2:
                 v1 = np.array(thresh1[t]["values"])
                 v2 = np.array(thresh2[t]["values"])
@@ -487,7 +671,7 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
 """
 
         csv_rows = []
-        for t in [100, 200, 300, 400, 500]:
+        for t in self._get_default_thresholds():
             t_data = tr.get(t, {})
             m1 = t_data.get(f"{strat1}_mean", np.nan)
             m2 = t_data.get(f"{strat2}_mean", np.nan)
@@ -504,7 +688,7 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
             m2_str = f"{m2:.1f}" if not np.isnan(m2) else "N/A"
             speedup_str = f"{speedup:.2f}x" if not np.isnan(speedup) else "N/A"
 
-            report += f"| Reward {t:3d} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
+            report += f"| Reward {t:6.1f} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
 
             csv_rows.append(
                 {
@@ -536,13 +720,18 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
         generates a Markdown-compatible Pandas DataFrame comparison table.
         """
         rows = []
+        key_thresh = self._get_key_threshold()
         for strat in strategies:
             summary = self.compute_summary_statistics(strat)
             if summary:
                 thresh_data = self.get_timesteps_to_thresholds(strat)
-                # Steps to reach reward 400
-                steps_400 = thresh_data.get(400, {}).get("mean", np.nan)
-                steps_400_str = f"{steps_400:.1f}" if not np.isnan(steps_400) else "N/A"
+                # Steps to reach primary threshold
+                steps_key = thresh_data.get(key_thresh, {}).get("mean", np.nan)
+                # Float fallback
+                if np.isnan(steps_key):
+                    closest_key = min(thresh_data.keys(), key=lambda k: abs(k - key_thresh))
+                    steps_key = thresh_data.get(closest_key, {}).get("mean", np.nan)
+                steps_key_str = f"{steps_key:.1f}" if not np.isnan(steps_key) else "N/A"
 
                 rows.append(
                     {
@@ -550,7 +739,7 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
                         "Seeds": summary["num_seeds"],
                         "Final Reward (Mean ± SD)": f"{summary['final_unshaped_reward_mean']:.2f} ± {summary['final_unshaped_reward_std']:.2f}",
                         "95% CI": f"± {summary['final_unshaped_reward_ci95']:.2f}",
-                        "Steps to R>=400": steps_400_str,
+                        f"Steps to R>={key_thresh}": steps_key_str,
                         "Mean Train Time (s)": f"{summary['mean_training_time_seconds']:.1f}s",
                     }
                 )
@@ -589,8 +778,8 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
                 "95% CI": float(summary["final_unshaped_reward_ci95"]),
                 "Mean Train Time (s)": float(summary["mean_training_time_seconds"]),
             }
-            # Add steps to thresholds 100, 200, 300, 400, 500
-            for t in [100, 200, 300, 400, 500]:
+            # Add steps to thresholds
+            for t in self._get_default_thresholds():
                 val = thresh_data.get(t, {}).get("mean", np.nan)
                 row[f"Steps to R>={t}"] = float(val) if not np.isnan(val) else np.nan
 
@@ -607,14 +796,21 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
         )
 
         # 2. Compile LaTeX-ready Table
-        latex_table = """% LaTeX table generated by PPO Reward Shaping Analysis Pipeline
-\\begin{table*}[t]
+        default_thresholds = self._get_default_thresholds()
+        if len(default_thresholds) >= 3:
+            rep_thresholds = [default_thresholds[0], default_thresholds[len(default_thresholds)//2], default_thresholds[-1]]
+        else:
+            rep_thresholds = default_thresholds
+
+        cols_headers = " & ".join([f"\\textbf{{Steps to $\\ge {t:.1f}$}}" for t in rep_thresholds])
+        latex_table = f"""% LaTeX table generated by PPO Reward Shaping Analysis Pipeline
+\\begin{{table*}}[t]
 \\centering
-\\caption{Comparative Performance under Different Reward Shaping Strategies on CartPole-v1 (5 Seeds)}
-\\label{tab:reward_shaping_comparison}
-\\begin{tabular}{lcccccc}
+\\caption{{Comparative Performance under Different Reward Shaping Strategies on {self.env_id}}}
+\\label{{tab:reward_shaping_comparison}}
+\\begin{{tabular}}{{l{"c" * (3 + len(rep_thresholds))}}}
 \\hline
-\\textbf{Strategy} & \\textbf{Final Reward (Mean $\\pm$ SD)} & \\textbf{95\\% CI} & \\textbf{Steps to $\\ge 100$} & \\textbf{Steps to $\\ge 300$} & \\textbf{Steps to $\\ge 500$} & \\textbf{Train Time (s)} \\\\
+\\textbf{{Strategy}} & \\textbf{{Final Reward (Mean $\\pm$ SD)}} & \\textbf{{95\\% CI}} & {cols_headers} & \\textbf{{Train Time (s)}} \\\\
 \\hline
 """
         import math
@@ -624,27 +820,16 @@ Average timesteps required to reach unshaped evaluation reward thresholds:
             final_rew = f"{row['Final Reward (Mean)']:.2f} $\\pm$ {row['Final Reward (Std)']:.2f}"
             ci = f"$\\pm$ {row['95% CI']:.2f}"
 
-            val100 = row["Steps to R>=100"]
-            t100 = (
-                f"{val100:.1f}"
-                if isinstance(val100, int | float) and not math.isnan(val100)
-                else "N/A"
-            )
-            val300 = row["Steps to R>=300"]
-            t300 = (
-                f"{val300:.1f}"
-                if isinstance(val300, int | float) and not math.isnan(val300)
-                else "N/A"
-            )
-            val500 = row["Steps to R>=500"]
-            t500 = (
-                f"{val500:.1f}"
-                if isinstance(val500, int | float) and not math.isnan(val500)
-                else "N/A"
-            )
+            steps_cols = []
+            for t in rep_thresholds:
+                val = row.get(f"Steps to R>={t}", np.nan)
+                val_str = f"{val:.1f}" if isinstance(val, int | float) and not math.isnan(val) else "N/A"
+                steps_cols.append(val_str)
+
+            steps_str = " & ".join(steps_cols)
             train_time = f"{row['Mean Train Time (s)']:.1f}s"
 
-            latex_table += f"{strat_name} & {final_rew} & {ci} & {t100} & {t300} & {t500} & {train_time} \\\\\n"
+            latex_table += f"{strat_name} & {final_rew} & {ci} & {steps_str} & {train_time} \\\\\n"
 
         latex_table += """\\hline
 \\end{tabular}
@@ -707,7 +892,7 @@ Sample Efficiency (Steps to Thresholds):
 | Threshold | {strat1.capitalize()} Mean (Steps) | {strat2.capitalize()} Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 """
-            for t in [100, 200, 300, 400, 500]:
+            for t in self._get_default_thresholds():
                 t_data = tr.get(t, {})
                 m1 = t_data.get(f"{strat1}_mean", np.nan)
                 m2 = t_data.get(f"{strat2}_mean", np.nan)
@@ -723,7 +908,7 @@ Sample Efficiency (Steps to Thresholds):
                 m2_str = f"{m2:.1f}" if not np.isnan(m2) else "N/A"
                 speedup_str = f"{speedup:.2f}x" if not np.isnan(speedup) else "N/A"
 
-                report += f"| Reward {t:3d} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
+                report += f"| Reward {t:6.1f} | {m1_str:21s} | {m2_str:21s} | {speedup_str:14s} | {p_val:.4e} | {d_val:.4f} |\n"
 
             report += "\n"
 
