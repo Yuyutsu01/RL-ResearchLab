@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 from typing import Any
 
@@ -351,3 +352,163 @@ def plot_training_losses(
 
     fig.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
     save_figure(fig, os.path.join(plots_dir, "losses"))
+
+
+def plot_sample_efficiency_curves(
+    env_id: str, strategies: list[str], base_dir: str = "."
+) -> None:
+    """
+    Plots sample efficiency curves: fractions of optimal reward vs. mean steps.
+    """
+    analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=base_dir)
+    plots_dir = os.path.join(base_dir, "plots", env_id)
+    os.makedirs(plots_dir, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    fractions = [0.10, 0.20, 0.40, 0.60, 0.80, 0.90, 0.95, 1.00]
+
+    for i, strat in enumerate(strategies):
+        color = COLOR_PALETTE[i % len(COLOR_PALETTE)]
+        frac_data = analyzer.get_timesteps_to_fractional_thresholds(strat, fractions=fractions)
+
+        means = []
+        sems = []
+        valid_fracs = []
+
+        for f in fractions:
+            if f in frac_data and not np.isnan(frac_data[f]["mean"]):
+                means.append(frac_data[f]["mean"] / 1000.0) # In thousands of steps
+                vals = np.array(frac_data[f]["values"])
+                vals_clean = vals[~np.isnan(vals)]
+                sem = stats.sem(vals_clean) if len(vals_clean) > 1 else 0.0
+                sems.append(sem / 1000.0)
+                valid_fracs.append(f)
+
+        if valid_fracs:
+            means = np.array(means)
+            sems = np.array(sems)
+            ax.plot(valid_fracs, means, label=strat.upper(), color=color, marker='o', linewidth=2)
+            ax.fill_between(valid_fracs, np.maximum(0, means - sems), means + sems, color=color, alpha=0.15)
+
+    ax.set_title(f"Sample Efficiency Curve on {env_id}", pad=15)
+    ax.set_xlabel("Fraction of Optimal Performance Span")
+    ax.set_ylabel("Steps to Threshold (k)")
+    ax.set_xticks(fractions)
+    ax.set_xticklabels([f"{int(f*100)}%" for f in fractions])
+    if ax.get_legend_handles_labels()[1]:
+        ax.legend(loc="upper left")
+    fig.tight_layout()
+    save_figure(fig, os.path.join(plots_dir, "sample_efficiency"))
+
+
+def plot_budget_sensitivity(
+    env_id: str, strategies: list[str], budgets: list[int], base_dir: str = "."
+) -> None:
+    """
+    Plots final reward and normalized AUC vs. budget scaling limits.
+    """
+    analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=base_dir)
+    plots_dir = os.path.join(base_dir, "plots", env_id)
+    os.makedirs(plots_dir, exist_ok=True)
+
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+
+    for i, strat in enumerate(strategies):
+        color = COLOR_PALETTE[i % len(COLOR_PALETTE)]
+
+        y_rew, y_rew_sem = [], []
+        y_auc, y_auc_sem = [], []
+        x_budgets = []
+
+        for b in budgets:
+            summary = analyzer.compute_summary_statistics(strat, step_limit=b)
+            if not summary:
+                continue
+            x_budgets.append(b / 1000.0) # In thousands of steps
+            y_rew.append(summary["final_unshaped_reward_mean"])
+            y_rew_sem.append(summary["final_unshaped_reward_std"] / np.sqrt(summary["num_seeds"]))
+
+            raw_aucs, norm_aucs = analyzer.calculate_auc(strat, max_steps=b)
+            y_auc.append(np.mean(norm_aucs) if norm_aucs else 0.0)
+            y_auc_sem.append(stats.sem(norm_aucs) if len(norm_aucs) > 1 else 0.0)
+
+        if x_budgets:
+            axs[0].plot(x_budgets, y_rew, label=strat.upper(), color=color, marker='o', linewidth=2)
+            axs[0].fill_between(x_budgets, np.array(y_rew) - np.array(y_rew_sem), np.array(y_rew) + np.array(y_rew_sem), color=color, alpha=0.15)
+
+            axs[1].plot(x_budgets, y_auc, label=strat.upper(), color=color, marker='s', linewidth=2)
+            axs[1].fill_between(x_budgets, np.array(y_auc) - np.array(y_auc_sem), np.array(y_auc) + np.array(y_auc_sem), color=color, alpha=0.15)
+
+    axs[0].set_title("Asymptotic Performance vs. Training Budget Limit", pad=12)
+    axs[0].set_xlabel("Training Budget (k steps)")
+    axs[0].set_ylabel("Evaluation Reward (Mean)")
+    if axs[0].get_legend_handles_labels()[1]:
+        axs[0].legend(loc="lower right")
+
+    axs[1].set_title("Sample Efficiency (AUC) vs. Training Budget Limit", pad=12)
+    axs[1].set_xlabel("Training Budget (k steps)")
+    axs[1].set_ylabel("Normalized AUC")
+    if axs[1].get_legend_handles_labels()[1]:
+        axs[1].legend(loc="lower right")
+
+    fig.suptitle(f"Training Budget Sensitivity Analysis: {env_id}", y=0.98)
+    fig.tight_layout()
+    save_figure(fig, os.path.join(plots_dir, "budget_sensitivity"))
+
+
+def plot_performance_distributions(
+    env_id: str, strategies: list[str], base_dir: str = "."
+) -> None:
+    """
+    Renders violin/box plots for Reward and AUC distributions across random seeds.
+    """
+    analyzer = ExperimentAnalyzer(env_id=env_id, base_dir=base_dir)
+    plots_dir = os.path.join(base_dir, "plots", env_id)
+    os.makedirs(plots_dir, exist_ok=True)
+
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+
+    reward_data = []
+    auc_data = []
+    labels = []
+
+    for strat in strategies:
+        rewards = analyzer.get_final_evaluation_rewards(strat)
+        summary = analyzer.compute_summary_statistics(strat)
+        if summary:
+            # Determine maximum steps from metadata
+            seed_paths = analyzer._find_seeds_for_strategy(strat)
+            max_steps = 100000.0
+            if seed_paths:
+                meta_path = os.path.join(seed_paths[0], "metadata.json")
+                if os.path.exists(meta_path):
+                    try:
+                        with open(meta_path) as f:
+                            meta = json.load(f)
+                        max_steps = float(meta.get("total_timesteps", 100000.0))
+                    except Exception:
+                        pass
+            _, norm_aucs = analyzer.calculate_auc(strat, max_steps=max_steps)
+            if rewards and norm_aucs:
+                reward_data.append(rewards)
+                auc_data.append(norm_aucs)
+                labels.append(strat.upper())
+
+    if reward_data and auc_data:
+        axs[0].violinplot(reward_data, showmeans=True, showmedians=False)
+        axs[0].set_title("Distribution of Final Evaluation Rewards", pad=12)
+        axs[0].set_xticks(range(1, len(labels) + 1))
+        axs[0].set_xticklabels(labels)
+        axs[0].set_ylabel("Evaluation Reward")
+        axs[0].boxplot(reward_data, widths=0.15, showfliers=True)
+
+        axs[1].violinplot(auc_data, showmeans=True, showmedians=False)
+        axs[1].set_title("Distribution of Sample Efficiency (AUC)", pad=12)
+        axs[1].set_xticks(range(1, len(labels) + 1))
+        axs[1].set_xticklabels(labels)
+        axs[1].set_ylabel("Normalized AUC")
+        axs[1].boxplot(auc_data, widths=0.15, showfliers=True)
+
+    fig.suptitle(f"Robustness Distribution Across Seeds: {env_id}", y=0.98)
+    fig.tight_layout()
+    save_figure(fig, os.path.join(plots_dir, "robustness_distributions"))
