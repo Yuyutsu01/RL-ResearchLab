@@ -1,11 +1,11 @@
 {
-    "experiment_name": "lunarlander_pbrs",
-    "env_id": "LunarLander-v3",
+    "experiment_name": "acrobot_smoke_test",
+    "env_id": "Acrobot-v1",
     "strategy": "pbrs",
     "seed": 43,
-    "total_timesteps": 100000,
-    "training_time_seconds": 743.2130918502808,
-    "device": "cpu",
-    "final_model_path": "c:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\LunarLander-v3\\pbrs\\seed_43\\final_model.zip",
+    "total_timesteps": 10000,
+    "training_time_seconds": 45.89432334899902,
+    "device": "cuda",
+    "final_model_path": "C:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\Acrobot-v1\\pbrs\\seed_43\\final_model.zip",
     "deterministic_execution": true
 }

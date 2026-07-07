@@ -1,0 +1,30 @@
+\begin{table*}[t]
+\centering
+\caption{Cross-Environment Performance Comparison of Reward Shaping Strategies}
+\label{tab:cross_env_comparison}
+\begin{tabular}{llccccc}
+\hline
+\textbf{Environment} & \textbf{Strategy} & \textbf{Final Reward (Mean $\pm$ SD)} & \textbf{95\% CI} & \textbf{Steps to Thresh} & \textbf{Train Time (s)} \\
+\hline
+\multirow{3}{*}{CartPole-v1} 
+ & Identity & 405.67 $\pm$ 188.67 & $\pm$ 261.91 & 13750 & 150.9 \\
+ & Dense & 500.00 $\pm$ 0.00 & $\pm$ 0.00 & 15000 & 191.2 \\
+ & Pbrs & 500.00 $\pm$ 0.00 & $\pm$ 0.00 & 12500 & 184.0 \\
+\hline
+\multirow{3}{*}{MountainCar-v0} 
+ & Identity & -200.00 $\pm$ 0.00 & $\pm$ 0.00 & N/A & 588.6 \\
+ & Dense & -200.00 $\pm$ 0.01 & $\pm$ 0.01 & N/A & 591.9 \\
+ & Pbrs & -200.00 $\pm$ 0.00 & $\pm$ 0.00 & N/A & 594.2 \\
+\hline
+\multirow{3}{*}{Acrobot-v1} 
+ & Identity & -83.46 $\pm$ 2.79 & $\pm$ 3.87 & 22000 & 612.5 \\
+ & Dense & -109.09 $\pm$ 13.84 & $\pm$ 19.22 & 14000 & 611.8 \\
+ & Pbrs & -81.39 $\pm$ 1.10 & $\pm$ 1.53 & 15000 & 612.0 \\
+\hline
+\multirow{3}{*}{LunarLander-v3} 
+ & Identity & 99.01 $\pm$ 32.68 & $\pm$ 45.37 & 95000 & 644.1 \\
+ & Dense & 1.51 $\pm$ 50.05 & $\pm$ 69.48 & N/A & 640.7 \\
+ & Pbrs & 50.85 $\pm$ 45.18 & $\pm$ 62.72 & 95000 & 644.0 \\
+\hline
+\end{tabular}
+\end{table*}

@@ -1,54 +1,54 @@
 ================================================================================
 RL RESEARCH LAB: UNIFIED STATISTICAL EVALUATION MANUSCRIPT ASSETS
 Strategies compared: DENSE, IDENTITY, PBRS
-Generated: 2026-07-06
+Generated: 2026-07-07
 ================================================================================
 
 --------------------------------------------------------------------------------
 PAIRWISE COMPARISON: DENSE vs. IDENTITY
 --------------------------------------------------------------------------------
-- DENSE raw rewards: [-125.9276623, -119.12847909999998, -128.5448955, -152.46509840000002, -95.4419756]
-- IDENTITY raw rewards: [-19.060771400000004, -83.66916840000002, -31.903209299999997, 162.72266290000002, 56.546794]
+- DENSE raw rewards: [-118.4, -87.2, -75.9, -125.1, -88.2]
+- IDENTITY raw rewards: [-78.3, -80.7, -79.2, -85.0, -107.9]
 
 Welch's Independent t-test:
-  t-statistic = -3.2274
-  p-value     = 2.8279e-02 (p < 0.05 is statistically significant)
+  t-statistic = -1.1485
+  p-value     = 2.9191e-01 (p < 0.05 is statistically significant)
 
 Mann-Whitney U Rank Test:
-  U-statistic = 0.0000
-  p-value     = 7.9365e-03
+  U-statistic = 7.0000
+  p-value     = 3.0952e-01
 
 Effect Size:
-  Cohen's d   = -2.0412 (d > 0.8 represents large effect size)
+  Cohen's d   = -0.7264 (d > 0.8 represents large effect size)
 
 Conclusion:
-  The strategies differ significantly in final asymptotic performance.
+  No statistically significant difference in final performance was detected.
 
 Sample Efficiency (Steps to Thresholds):
 | Threshold | Dense Mean (Steps) | Identity Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Reward 100 | N/A                   | 95000.0               | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 200 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 300 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 400 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 500 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward -300.0 | 10000.0               | 12000.0               | 0.83x          | 6.9733e-01 | -0.2582 |
+| Reward -200.0 | 10000.0               | 13000.0               | 0.77x          | 5.4076e-01 | -0.4092 |
+| Reward -150.0 | 10000.0               | 20000.0               | 0.50x          | 6.3952e-02 | -1.4142 |
+| Reward -100.0 | 14000.0               | 22000.0               | 0.64x          | 1.5838e-01 | -1.0119 |
+| Reward  -80.0 | 31000.0               | 33000.0               | 0.94x          | 8.4028e-01 | -0.1352 |
 
 --------------------------------------------------------------------------------
 PAIRWISE COMPARISON: DENSE vs. PBRS
 --------------------------------------------------------------------------------
-- DENSE raw rewards: [-125.9276623, -119.12847909999998, -128.5448955, -152.46509840000002, -95.4419756]
-- PBRS raw rewards: [103.0310211, -92.00936970000001, -151.8366507, -30.011808600000002, -35.850833900000005]
+- DENSE raw rewards: [-118.4, -87.2, -75.9, -125.1, -88.2]
+- PBRS raw rewards: [-224.8, -76.0, -83.4, -126.4, -86.7]
 
 Welch's Independent t-test:
-  t-statistic = -1.9173
-  p-value     = 1.2158e-01 (p < 0.05 is statistically significant)
+  t-statistic = 0.6979
+  p-value     = 5.1665e-01 (p < 0.05 is statistically significant)
 
 Mann-Whitney U Rank Test:
-  U-statistic = 4.0000
-  p-value     = 9.5238e-02
+  U-statistic = 13.0000
+  p-value     = 1.0000e+00
 
 Effect Size:
-  Cohen's d   = -1.2126 (d > 0.8 represents large effect size)
+  Cohen's d   = 0.4414 (d > 0.8 represents large effect size)
 
 Conclusion:
   No statistically significant difference in final performance was detected.
@@ -56,28 +56,28 @@ Conclusion:
 Sample Efficiency (Steps to Thresholds):
 | Threshold | Dense Mean (Steps) | Pbrs Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Reward 100 | N/A                   | 95000.0               | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 200 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 300 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 400 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 500 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward -300.0 | 10000.0               | 7800.0                | 1.28x          | 4.9220e-01 | 0.4553 |
+| Reward -200.0 | 10000.0               | 7250.0                | 1.38x          | 4.5058e-01 | 0.5412 |
+| Reward -150.0 | 10000.0               | 8500.0                | 1.18x          | 7.4956e-01 | 0.2385 |
+| Reward -100.0 | 14000.0               | 11000.0               | 1.27x          | 4.9489e-01 | 0.5000 |
+| Reward  -80.0 | 31000.0               | 27500.0               | 1.13x          | 7.7253e-01 | 0.1933 |
 
 --------------------------------------------------------------------------------
 PAIRWISE COMPARISON: IDENTITY vs. PBRS
 --------------------------------------------------------------------------------
-- IDENTITY raw rewards: [-19.060771400000004, -83.66916840000002, -31.903209299999997, 162.72266290000002, 56.546794]
-- PBRS raw rewards: [103.0310211, -92.00936970000001, -151.8366507, -30.011808600000002, -35.850833900000005]
+- IDENTITY raw rewards: [-78.3, -80.7, -79.2, -85.0, -107.9]
+- PBRS raw rewards: [-224.8, -76.0, -83.4, -126.4, -86.7]
 
 Welch's Independent t-test:
-  t-statistic = 0.9683
-  p-value     = 3.6124e-01 (p < 0.05 is statistically significant)
+  t-statistic = 1.1744
+  p-value     = 3.0089e-01 (p < 0.05 is statistically significant)
 
 Mann-Whitney U Rank Test:
-  U-statistic = 18.0000
-  p-value     = 3.0952e-01
+  U-statistic = 17.0000
+  p-value     = 4.2063e-01
 
 Effect Size:
-  Cohen's d   = 0.6124 (d > 0.8 represents large effect size)
+  Cohen's d   = 0.7428 (d > 0.8 represents large effect size)
 
 Conclusion:
   No statistically significant difference in final performance was detected.
@@ -85,9 +85,9 @@ Conclusion:
 Sample Efficiency (Steps to Thresholds):
 | Threshold | Identity Mean (Steps) | Pbrs Mean (Steps) | Speedup Factor | t-p-value | Cohen's d |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Reward 100 | 95000.0               | 95000.0               | 1.00x          | 1.0000e+00 | 0.0000 |
-| Reward 200 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 300 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 400 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
-| Reward 500 | N/A                   | N/A                   | N/A            | 1.0000e+00 | 0.0000 |
+| Reward -300.0 | 12000.0               | 7800.0                | 1.54x          | 4.1953e-01 | 0.5498 |
+| Reward -200.0 | 13000.0               | 7250.0                | 1.79x          | 2.7465e-01 | 0.7506 |
+| Reward -150.0 | 20000.0               | 8500.0                | 2.35x          | 7.3688e-02 | 1.3931 |
+| Reward -100.0 | 22000.0               | 11000.0               | 2.00x          | 8.5213e-02 | 1.2862 |
+| Reward  -80.0 | 33000.0               | 27500.0               | 1.20x          | 5.0929e-01 | 0.5480 |
 
