@@ -237,6 +237,7 @@ class ExperimentRunner:
     def run_all(self) -> dict[int, dict[str, Any]]:
         """
         Runs the experiment sequentially for all seeds defined in the config.
+        Checks for existing metadata.json to support automatic resume/checkpointing.
 
         Returns:
             A dictionary mapping seed -> execution diagnostic summary.
@@ -251,6 +252,23 @@ class ExperimentRunner:
         suite_start_time = time.time()
 
         for seed in seeds:
+            # Check for existing metadata.json to skip already completed seed training runs
+            seed_suffix = f"seed_{seed}"
+            result_dir = os.path.abspath(
+                os.path.join(
+                    self.base_dir, "results", self.env_id, self.strategy, seed_suffix
+                )
+            )
+            metadata_path = os.path.join(result_dir, "metadata.json")
+            if os.path.exists(metadata_path):
+                print(f"[RESUME] Skipping completed seed {seed} (found metadata.json).")
+                try:
+                    with open(metadata_path, "r") as f:
+                        results[seed] = json.load(f)
+                    continue
+                except Exception as e:
+                    print(f"Failed to read existing metadata for seed {seed} ({e}). Retraining...")
+
             results[seed] = self.run_single_seed(seed)
 
         suite_duration = time.time() - suite_start_time
