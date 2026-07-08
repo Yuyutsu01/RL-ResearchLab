@@ -1,0 +1,170 @@
+{
+    "reference_default": {
+        "mean_reward": -200.0,
+        "std_reward": 0.0,
+        "mean_auc": -200.0,
+        "std_auc": 0.0,
+        "num_seeds": 3
+    },
+    "learning_rate": {
+        "0.0003": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.0001": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "5e-05": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    },
+    "batch_size": {
+        "64": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "128": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "256": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    },
+    "gamma": {
+        "0.99": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.995": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.999": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    },
+    "gae_lambda": {
+        "0.95": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.97": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.99": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    },
+    "ent_coef": {
+        "0.0": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.01": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.02": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    },
+    "clip_range": {
+        "0.2": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.15": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "0.1": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    },
+    "net_arch": {
+        "64x64": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "128x128": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        },
+        "256x256": {
+            "mean_reward": -200.0,
+            "std_reward": 0.0,
+            "mean_auc": -200.0,
+            "std_auc": 0.0,
+            "num_seeds": 3
+        }
+    }
+}
