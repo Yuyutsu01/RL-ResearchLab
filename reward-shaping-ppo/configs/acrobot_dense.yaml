@@ -1,10 +1,12 @@
 experiment:
-  name: acrobot_dense
-  env_id: Acrobot-v1
-  total_timesteps: 750000
-  eval_freq: 5000
-  eval_episodes: 10
   checkpoint_freq: 20000
+  env_id: Acrobot-v1
+  eval_episodes: 10
+  eval_freq: 5000
+  name: acrobot_dense
+  reproducibility:
+    benchmark: false
+    deterministic: true
   seeds:
   - 42
   - 43
@@ -16,31 +18,29 @@ experiment:
   - 49
   - 50
   - 51
-  reproducibility:
-    deterministic: true
-    benchmark: false
+  total_timesteps: 750000
 ppo:
-  learning_rate: 0.0003
-  n_steps: 2048
-  batch_size: 64
-  n_epochs: 10
-  gamma: 0.99
-  gae_lambda: 0.95
+  batch_size: 128
   clip_range: 0.2
-  ent_coef: 0.0
-  vf_coef: 0.5
-  max_grad_norm: 0.5
   device: cpu
+  ent_coef: 0.02
+  gae_lambda: 0.95
+  gamma: 0.995
+  learning_rate: 0.0003
+  max_grad_norm: 0.5
+  n_epochs: 10
+  n_steps: 2048
   policy_kwargs:
     net_arch:
       pi:
-      - 64
-      - 64
+      - 256
+      - 256
       vf:
-      - 64
-      - 64
+      - 256
+      - 256
+  vf_coef: 0.5
 reward_shaping:
-  strategy: dense
   params:
     height_weight: 1.0
     velocity_weight: 0.1
+  strategy: dense
