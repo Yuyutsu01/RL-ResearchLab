@@ -5,7 +5,9 @@ import sys
 
 def run_config(config_name):
     print(f"[START] Running config: {config_name}")
-    workspace_dir = r"c:\Users\shiva\OneDrive\Desktop\projects\RL-ResearchLab\reward-shaping-ppo"
+    # Resolve project root dynamically
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    workspace_dir = os.path.abspath(os.path.join(script_dir, ".."))
     config_path = os.path.join("configs", config_name)
     
     # Restrict PyTorch thread usage to 1 per process to avoid CPU oversubscription

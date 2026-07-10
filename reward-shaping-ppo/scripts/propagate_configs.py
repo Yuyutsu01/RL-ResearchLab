@@ -2,7 +2,9 @@ import os
 import yaml
 
 def propagate():
-    project_dir = r"c:\Users\shiva\OneDrive\Desktop\projects\RL-ResearchLab\reward-shaping-ppo"
+    # Resolve project root dynamically
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.abspath(os.path.join(script_dir, ".."))
     configs_dir = os.path.join(project_dir, "configs")
     
     environments = [
