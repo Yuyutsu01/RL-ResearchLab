@@ -34,10 +34,19 @@ def run_sequential():
         
         start_time = time.time()
         
+        # Restrict PyTorch thread usage to 1 per process to avoid CPU overhead
+        env = os.environ.copy()
+        env["OMP_NUM_THREADS"] = "1"
+        env["MKL_NUM_THREADS"] = "1"
+        env["OPENBLAS_NUM_THREADS"] = "1"
+        env["VECLIB_MAXIMUM_THREADS"] = "1"
+        env["NUMEXPR_NUM_THREADS"] = "1"
+
         # Run main.py sequentially for this config
         result = subprocess.run(
             [sys.executable, "main.py", "--config", config_path, "--mode", "all"],
-            cwd=workspace_dir
+            cwd=workspace_dir,
+            env=env
         )
         
         duration = time.time() - start_time
