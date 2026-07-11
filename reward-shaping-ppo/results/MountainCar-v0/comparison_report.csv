@@ -1,4 +1,4 @@
-Strategy,Seeds,Final Reward (Mean ± SD),95% CI,Steps to R>=400,Mean Train Time (s)
-Dense,5,-200.00 ± 0.01,± 0.01,N/A,591.9s
-Identity,5,-200.00 ± 0.00,± 0.00,N/A,588.6s
-Pbrs,5,-200.00 ± 0.00,± 0.00,N/A,594.2s
+Strategy,Seeds,Final Reward (Mean ± SD),95% CI,Steps to R>=-120.0,Mean Train Time (s)
+Dense,10,-137.29 ± 31.54,± 23.78,361875.0,1409.6s
+Identity,10,-175.60 ± 37.28,± 28.11,575000.0,1684.0s
+Pbrs,2,-159.36 ± 40.64,± 516.40,220000.0,4985.3s
