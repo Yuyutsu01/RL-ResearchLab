@@ -1,9 +1,9 @@
 {
     "strategy": "identity",
-    "num_seeds": 5,
-    "final_unshaped_reward_mean": -200.0,
-    "final_unshaped_reward_std": 0.0,
-    "final_unshaped_reward_ci95": 0.0,
-    "mean_training_time_seconds": 588.6412339687347,
-    "total_training_time_seconds": 2943.2061698436737
+    "num_seeds": 10,
+    "final_unshaped_reward_mean": -175.59978463211502,
+    "final_unshaped_reward_std": 37.27948999580437,
+    "final_unshaped_reward_ci95": 28.110688440518864,
+    "mean_training_time_seconds": 1684.0380900144578,
+    "total_training_time_seconds": 16840.380900144577
 }

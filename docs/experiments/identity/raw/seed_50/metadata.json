@@ -1,0 +1,11 @@
+{
+    "experiment_name": "mountaincar_identity",
+    "env_id": "MountainCar-v0",
+    "strategy": "identity",
+    "seed": 50,
+    "total_timesteps": 1000000,
+    "training_time_seconds": 1568.7336604595184,
+    "device": "cpu",
+    "final_model_path": "C:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\MountainCar-v0\\identity\\seed_50\\final_model.zip",
+    "deterministic_execution": true
+}
