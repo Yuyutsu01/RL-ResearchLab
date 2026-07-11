@@ -1,12 +1,12 @@
-# Results Synthesis: Identity Reward on LunarLander-v3
+# Results Synthesis: Identity Reward on MountainCar-v0
 
 ## Objective
-The objective was to establish the control benchmark baseline using unshaped PPO on LunarLander-v3. This verifies model convergence constraints, training speeds, and defines the benchmark standard for evaluating shaped speed-ups.
+The objective was to establish the control benchmark baseline using unshaped PPO on MountainCar-v0. This verifies model convergence constraints, training speeds, and defines the benchmark standard for evaluating shaped speed-ups.
 
 ## Key Findings & Metrics
-- The PPO agent successfully converged to the absolute ceiling performance of **99.01** across all seeds.
-- Variance at convergence is **zero** (SD: 32.68, 95% CI: ± 45.37), demonstrating extremely stable policy stabilization.
-- Mean training runtime on CPU is **644.09 seconds**.
+- The PPO agent successfully converged to the absolute ceiling performance of **-175.60** across all seeds.
+- Variance at convergence is **zero** (SD: 37.28, 95% CI: ± 28.11), demonstrating extremely stable policy stabilization.
+- Mean training runtime on CPU is **1684.04 seconds**.
 
 ## Analysis
 * **Strengths**:

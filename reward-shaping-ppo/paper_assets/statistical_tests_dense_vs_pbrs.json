@@ -1,70 +1,72 @@
 {
     "final_rewards": {
         "dense_values": [
-            -118.4,
-            -87.2,
-            -75.9,
-            -125.1,
-            -88.2
+            -100.8,
+            -110.2,
+            -101.9,
+            -120.2,
+            -139.6,
+            -200.0,
+            -134.8,
+            -115.9,
+            -128.9,
+            -200.0
         ],
         "pbrs_values": [
-            -224.8,
-            -76.0,
-            -83.4,
-            -126.4,
-            -86.7
+            -112.8,
+            -200.0
         ],
-        "t_statistic": 0.697948548308392,
-        "t_p_value": 0.5166535032094,
-        "u_statistic": 13.0,
-        "u_p_value": 1.0,
-        "cohens_d": 0.4414214204525158
+        "t_statistic": 0.46940450871190015,
+        "t_p_value": 0.7125129293456847,
+        "u_statistic": 12.0,
+        "u_p_value": 0.74553748053554,
+        "cohens_d": 0.5330288945270046
     },
     "thresholds": {
-        "-300.0": {
-            "dense_mean": 10000.0,
-            "pbrs_mean": 7800.0,
-            "t_statistic": 0.7198619901040573,
-            "t_p_value": 0.49220183153688846,
-            "u_statistic": 16.5,
-            "u_p_value": 0.44319355006719996,
-            "cohens_d": 0.4552806979420822
-        },
-        "-200.0": {
-            "dense_mean": 10000.0,
-            "pbrs_mean": 7250.0,
-            "t_statistic": 0.8029696215572991,
-            "t_p_value": 0.4505802338901389,
-            "u_statistic": 14.0,
-            "u_p_value": 0.36167307052394915,
-            "cohens_d": 0.5411810249796861
-        },
-        "-150.0": {
-            "dense_mean": 10000.0,
-            "pbrs_mean": 8500.0,
-            "t_statistic": 0.3375263702778072,
-            "t_p_value": 0.7495568776583348,
-            "u_statistic": 13.0,
-            "u_p_value": 0.520529502997093,
-            "cohens_d": 0.2384516843643032
-        },
-        "-100.0": {
-            "dense_mean": 14000.0,
-            "pbrs_mean": 11000.0,
-            "t_statistic": 0.7276068751089989,
-            "t_p_value": 0.4948939002588496,
-            "u_statistic": 13.5,
-            "u_p_value": 0.45088703102517036,
-            "cohens_d": 0.5
-        },
-        "-80.0": {
-            "dense_mean": 31000.0,
-            "pbrs_mean": 27500.0,
-            "t_statistic": 0.3005833296200614,
-            "t_p_value": 0.7725319133662838,
-            "u_statistic": 10.0,
+        "-180.0": {
+            "dense_mean": 264375.0,
+            "pbrs_mean": 115000.0,
+            "t_statistic": 0.0,
+            "t_p_value": 1.0,
+            "u_statistic": 0.0,
             "u_p_value": 1.0,
-            "cohens_d": 0.19329726956855328
+            "cohens_d": 0.0
+        },
+        "-160.0": {
+            "dense_mean": 280000.0,
+            "pbrs_mean": 115000.0,
+            "t_statistic": 0.0,
+            "t_p_value": 1.0,
+            "u_statistic": 0.0,
+            "u_p_value": 1.0,
+            "cohens_d": 0.0
+        },
+        "-140.0": {
+            "dense_mean": 298125.0,
+            "pbrs_mean": 115000.0,
+            "t_statistic": 0.0,
+            "t_p_value": 1.0,
+            "u_statistic": 0.0,
+            "u_p_value": 1.0,
+            "cohens_d": 0.0
+        },
+        "-120.0": {
+            "dense_mean": 361875.0,
+            "pbrs_mean": 220000.0,
+            "t_statistic": 0.0,
+            "t_p_value": 1.0,
+            "u_statistic": 0.0,
+            "u_p_value": 1.0,
+            "cohens_d": 0.0
+        },
+        "-110.0": {
+            "dense_mean": 400714.28571428574,
+            "pbrs_mean": 245000.0,
+            "t_statistic": 0.0,
+            "t_p_value": 1.0,
+            "u_statistic": 0.0,
+            "u_p_value": 1.0,
+            "cohens_d": 0.0
         }
     }
 }
