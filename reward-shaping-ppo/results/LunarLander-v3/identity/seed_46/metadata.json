@@ -1,0 +1,11 @@
+{
+    "experiment_name": "lunarlander_identity",
+    "env_id": "LunarLander-v3",
+    "strategy": "identity",
+    "seed": 46,
+    "total_timesteps": 1000000,
+    "training_time_seconds": 1319.5607001781464,
+    "device": "cpu",
+    "final_model_path": "C:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\LunarLander-v3\\identity\\seed_46\\final_model.zip",
+    "deterministic_execution": true
+}

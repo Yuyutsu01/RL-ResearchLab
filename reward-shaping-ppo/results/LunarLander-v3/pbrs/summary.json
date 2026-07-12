@@ -1,9 +1,9 @@
 {
     "strategy": "pbrs",
-    "num_seeds": 5,
-    "final_unshaped_reward_mean": 50.84866952845218,
-    "final_unshaped_reward_std": 45.182787414658776,
-    "final_unshaped_reward_ci95": 62.72376447831104,
-    "mean_training_time_seconds": 643.9886847019195,
-    "total_training_time_seconds": 3219.943423509598
+    "num_seeds": 10,
+    "final_unshaped_reward_mean": 240.78358198047172,
+    "final_unshaped_reward_std": 21.892166652986703,
+    "final_unshaped_reward_ci95": 16.507840534816506,
+    "mean_training_time_seconds": 1780.8121700048446,
+    "total_training_time_seconds": 17808.121700048447
 }

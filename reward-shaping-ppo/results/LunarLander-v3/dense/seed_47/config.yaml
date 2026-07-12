@@ -1,0 +1,47 @@
+experiment:
+  checkpoint_freq: 20000
+  env_id: LunarLander-v3
+  eval_episodes: 10
+  eval_freq: 5000
+  name: lunarlander_dense
+  reproducibility:
+    benchmark: false
+    deterministic: true
+  seeds:
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+  - 50
+  - 51
+  total_timesteps: 1000000
+ppo:
+  batch_size: 64
+  clip_range: 0.2
+  device: cpu
+  ent_coef: 0.0
+  gae_lambda: 0.95
+  gamma: 0.999
+  learning_rate: 0.0003
+  max_grad_norm: 0.5
+  n_epochs: 10
+  n_steps: 2048
+  policy_kwargs:
+    net_arch:
+      pi:
+      - 64
+      - 64
+      vf:
+      - 64
+      - 64
+  vf_coef: 0.5
+reward_shaping:
+  params:
+    angle_weight: 1.0
+    distance_weight: 0.5
+    velocity_weight: 0.5
+  strategy: dense
