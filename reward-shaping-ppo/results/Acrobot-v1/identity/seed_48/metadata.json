@@ -1,0 +1,11 @@
+{
+    "experiment_name": "acrobot_identity",
+    "env_id": "Acrobot-v1",
+    "strategy": "identity",
+    "seed": 48,
+    "total_timesteps": 750000,
+    "training_time_seconds": 740.1190934181213,
+    "device": "cpu",
+    "final_model_path": "C:\\Users\\shiva\\OneDrive\\Desktop\\projects\\RL-ResearchLab\\reward-shaping-ppo\\models\\Acrobot-v1\\identity\\seed_48\\final_model.zip",
+    "deterministic_execution": true
+}
