@@ -1,4 +1,4 @@
-# Experiment Overview: Identity Reward Shaping (Control) on MountainCar-v0
+# Experiment Overview: Identity Reward Shaping (Control) on LunarLander-v3
 
 ## Research Motivation
 Establish the unshaped baseline control benchmark for PPO. It isolates policy gradient updates without external guidance to measure raw convergence rates and asymptotic performance constraints.
@@ -17,7 +17,7 @@ $$R_{shaped}(s, a, s') = R_{original}(s, a, s')$$
 ## Configuration Details
 Hyperparameters and parameters are archived under:
 * [config.yaml](raw/config.yaml)
-* Environment: `MountainCar-v0`
+* Environment: `LunarLander-v3`
 * Hyperparameters: Standard SB3 PPO default MLP policy network (`[64, 64]`) on CPU.
 
 ## Observations

@@ -1,12 +1,12 @@
-# Results Synthesis: Potential-Based Reward Shaping (PBRS) on Acrobot-v1
+# Results Synthesis: Potential-Based Reward Shaping (PBRS) on LunarLander-v3
 
 ## Objective
 Evaluate PPO training with Potential-Based Reward Shaping (PBRS) to guide the agent toward the track center and vertical upright posture. Compare convergence speed, sample efficiency, and policy invariance against the unshaped Identity control baseline and heuristic Dense Reward shaping.
 
 ## Key Findings & Metrics
-- The PPO agent successfully converged to the absolute ceiling performance of **-143.42** across all seeds.
-- Variance at convergence is **zero** (SD: 106.71, 95% CI: ± 148.14).
-- Mean training runtime on CPU is **377.71 seconds**.
+- The PPO agent successfully converged to the absolute ceiling performance of **240.78** across all seeds.
+- Variance at convergence is **zero** (SD: 21.89, 95% CI: ± 16.51).
+- Mean training runtime on CPU is **1780.81 seconds**.
 
 ## Analysis
 * **Strengths**:

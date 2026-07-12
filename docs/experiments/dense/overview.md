@@ -1,4 +1,4 @@
-# Experiment Overview: Dense Reward Shaping on MountainCar-v0
+# Experiment Overview: Dense Reward Shaping on LunarLander-v3
 
 ## Research Motivation
 Provide a continuous, immediate gradient signal at every transition step to guide the agent toward the track center and upright balance posture, improving early-stage sample efficiency.
@@ -17,7 +17,7 @@ $$R_{shaped}(s, a, s') = R_{original}(s, a, s') + \text{max\_bonus} - (\text{pos
 ## Configuration Details
 Hyperparameters and parameters are archived under:
 * [config.yaml](raw/config.yaml)
-* Environment: `MountainCar-v0`
+* Environment: `LunarLander-v3`
 * Hyperparameters: Standard SB3 PPO default MLP policy network (`[64, 64]`) on CPU.
 
 ## Observations
