@@ -1,4 +1,4 @@
-# Experiment Overview: Potential-Based Reward Shaping (PBRS) on Acrobot-v1
+# Experiment Overview: Potential-Based Reward Shaping (PBRS) on LunarLander-v3
 
 ## Research Motivation
 Provide a dense training signal to accelerate early learning while mathematically guaranteeing policy invariance (the optimal policy of the shaped MDP remains identical to the original MDP).
@@ -17,7 +17,7 @@ $$R_{shaped}(s, a, s') = R_{original}(s, a, s') + \gamma \Phi(s') - \Phi(s)$$
 ## Configuration Details
 Hyperparameters and parameters are archived under:
 * [config.yaml](raw/config.yaml)
-* Environment: `Acrobot-v1`
+* Environment: `LunarLander-v3`
 * Hyperparameters: Standard SB3 PPO default MLP policy network (`[64, 64]`) on CPU.
 
 ## Observations

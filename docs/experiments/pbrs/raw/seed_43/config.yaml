@@ -1,39 +1,48 @@
 experiment:
-  name: acrobot_smoke_test
-  env_id: Acrobot-v1
-  total_timesteps: 10000
-  eval_freq: 2000
-  eval_episodes: 5
-  checkpoint_freq: 5000
+  checkpoint_freq: 20000
+  env_id: LunarLander-v3
+  eval_episodes: 10
+  eval_freq: 5000
+  name: lunarlander_pbrs
+  reproducibility:
+    benchmark: false
+    deterministic: true
   seeds:
   - 42
   - 43
-  reproducibility:
-    deterministic: true
-    benchmark: false
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+  - 50
+  - 51
+  total_timesteps: 1000000
 ppo:
-  learning_rate: 0.0003
-  n_steps: 512
   batch_size: 64
-  n_epochs: 4
-  gamma: 0.99
-  gae_lambda: 0.95
   clip_range: 0.2
+  device: cpu
   ent_coef: 0.0
-  vf_coef: 0.5
+  gae_lambda: 0.95
+  gamma: 0.999
+  learning_rate: 0.0003
   max_grad_norm: 0.5
-  device: cuda
+  n_epochs: 10
+  n_steps: 2048
   policy_kwargs:
     net_arch:
       pi:
-      - 32
-      - 32
+      - 64
+      - 64
       vf:
-      - 32
-      - 32
+      - 64
+      - 64
+  vf_coef: 0.5
 reward_shaping:
-  strategy: pbrs
   params:
-    height_weight: 1.0
-    velocity_weight: 0.1
+    angle_weight: 1.0
+    distance_weight: 0.5
     gamma: 0.99
+    velocity_weight: 0.5
+  strategy: pbrs
